@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FONE Moderation Dashboard | Administrator Console</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin-body">
+
+  <!-- Password Protection Modal -->
+  <div class="admin-login-overlay" id="login-overlay">
+    <div class="admin-login-box glass-panel">
+      <div style="margin-bottom: 24px; display: inline-block;">
+        <!-- Official Foursquare Shield Logo (Savior, Spirit Baptizer, Healer, Coming King) -->
+        <svg viewBox="0 0 100 100" width="60" height="60" style="filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));">
+          <defs>
+            <clipPath id="foursquare-shield-clip-admin-box">
+              <path d="M 50,12 C 68,12 85,20 85,25 L 85,55 C 85,75 65,85 50,90 C 35,85 15,75 15,55 L 15,25 C 15,20 32,12 50,12 Z" />
+            </clipPath>
+          </defs>
+          <path d="M 50,10 C 69,10 87,18 87,23 L 87,55 C 87,77 66,88 50,93 C 34,88 13,77 13,55 L 13,23 C 13,18 31,10 50,10 Z" fill="#FFE082" />
+          <path d="M 50,12 C 68,12 85,20 85,25 L 85,55 C 85,75 65,85 50,90 C 35,85 15,75 15,55 L 15,25 C 15,20 32,12 50,12 Z" fill="#FFB300" />
+          <g clip-path="url(#foursquare-shield-clip-admin-box)">
+            <rect x="0" y="0" width="50" height="50" fill="#D32F2F" />
+            <rect x="50" y="0" width="50" height="50" fill="#FFC107" />
+            <rect x="0" y="50" width="50" height="50" fill="#1976D2" />
+            <rect x="50" y="50" width="50" height="50" fill="#7B1FA2" />
+            <line x1="50" y1="0" x2="50" y2="100" stroke="#FFFFFF" stroke-width="2.5" />
+            <line x1="0" y1="50" x2="100" y2="50" stroke="#FFFFFF" stroke-width="2.5" />
+            <path d="M 32.5,19 L 32.5,37 M 25,25 L 40,25" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" />
+            <path d="M 68,22 C 66,22 62,24 60,26 C 60,28 62,29 65,29 C 63,33 65,36 67,37 C 69,37 70,34 71,32 C 73,32 75,28 73,26 C 71,24 70,22 68,22 Z" fill="#FFFFFF" />
+            <path d="M 60,26 C 60,22 65,18 68,18 C 70,18 70,22 68,22" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M 25,62 C 25,68 30,73 32.5,73 C 35,73 40,68 40,62 Z" fill="#FFFFFF" />
+            <path d="M 32.5,73 L 32.5,78 M 27,78 L 38,78" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+            <line x1="24" y1="62" x2="41" y2="62" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+            <path d="M 59,74 L 76,74 L 76,66 L 71.5,70 L 67.5,62 L 63.5,70 L 59,66 Z" fill="#FFFFFF" />
+            <line x1="59" y1="74" x2="76" y2="74" stroke="#7B1FA2" stroke-width="1.5" />
+            <circle cx="67.5" cy="71" r="1.2" fill="#7B1FA2" />
+            <circle cx="63" cy="71" r="1" fill="#7B1FA2" />
+            <circle cx="72" cy="71" r="1" fill="#7B1FA2" />
+          </g>
+          <path d="M 50,15 C 66,15 80,22 80,25 L 80,40 C 70,30 55,30 50,35 C 45,30 30,30 20,40 L 20,25 C 20,22 34,15 50,15 Z" fill="#FFFFFF" opacity="0.08" clip-path="url(#foursquare-shield-clip-admin-box)" />
+        </svg>
+      </div>
+      <h2>FONE Administrator</h2>
+      <p>Please enter the security password to moderate prayer requests and view private submissions.</p>
+      
+      <form id="login-form">
+        <input type="password" id="admin-pass-field" placeholder="••••••••" required autofocus>
+        <div class="login-error id-hidden" id="login-error-msg">Incorrect admin password. Please try again.</div>
+        <button type="submit" class="btn btn-primary btn-block">Authenticate</button>
+      </form>
+      
+      <div style="margin-top: 20px;">
+        <a href="index.html" style="font-size: 0.85rem; color: var(--text-muted); text-decoration: underline;">Back to Public Website</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Navigation Header -->
+  <header class="navbar scrolled">
+    <div class="nav-container">
+      <a href="index.html" class="logo-link">
+        <div class="logo-icon">
+          <!-- Official Foursquare Shield Logo (Savior, Spirit Baptizer, Healer, Coming King) -->
+          <svg viewBox="0 0 100 100" width="35" height="35" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+            <defs>
+              <clipPath id="foursquare-shield-clip-admin-nav">
+                <path d="M 50,12 C 68,12 85,20 85,25 L 85,55 C 85,75 65,85 50,90 C 35,85 15,75 15,55 L 15,25 C 15,20 32,12 50,12 Z" />
+              </clipPath>
+            </defs>
+            <path d="M 50,10 C 69,10 87,18 87,23 L 87,55 C 87,77 66,88 50,93 C 34,88 13,77 13,55 L 13,23 C 13,18 31,10 50,10 Z" fill="#FFE082" />
+            <path d="M 50,12 C 68,12 85,20 85,25 L 85,55 C 85,75 65,85 50,90 C 35,85 15,75 15,55 L 15,25 C 15,20 32,12 50,12 Z" fill="#FFB300" />
+            <g clip-path="url(#foursquare-shield-clip-admin-nav)">
+              <rect x="0" y="0" width="50" height="50" fill="#D32F2F" />
+              <rect x="50" y="0" width="50" height="50" fill="#FFC107" />
+              <rect x="0" y="50" width="50" height="50" fill="#1976D2" />
+              <rect x="50" y="50" width="50" height="50" fill="#7B1FA2" />
+              <line x1="50" y1="0" x2="50" y2="100" stroke="#FFFFFF" stroke-width="2.5" />
+              <line x1="0" y1="50" x2="100" y2="50" stroke="#FFFFFF" stroke-width="2.5" />
+              <path d="M 32.5,19 L 32.5,37 M 25,25 L 40,25" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" />
+              <path d="M 68,22 C 66,22 62,24 60,26 C 60,28 62,29 65,29 C 63,33 65,36 67,37 C 69,37 70,34 71,32 C 73,32 75,28 73,26 C 71,24 70,22 68,22 Z" fill="#FFFFFF" />
+              <path d="M 60,26 C 60,22 65,18 68,18 C 70,18 70,22 68,22" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+              <path d="M 25,62 C 25,68 30,73 32.5,73 C 35,73 40,68 40,62 Z" fill="#FFFFFF" />
+              <path d="M 32.5,73 L 32.5,78 M 27,78 L 38,78" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+              <line x1="24" y1="62" x2="41" y2="62" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+              <path d="M 59,74 L 76,74 L 76,66 L 71.5,70 L 67.5,62 L 63.5,70 L 59,66 Z" fill="#FFFFFF" />
+              <line x1="59" y1="74" x2="76" y2="74" stroke="#7B1FA2" stroke-width="1.5" />
+              <circle cx="67.5" cy="71" r="1.2" fill="#7B1FA2" />
+              <circle cx="63" cy="71" r="1" fill="#7B1FA2" />
+              <circle cx="72" cy="71" r="1" fill="#7B1FA2" />
+            </g>
+            <path d="M 50,15 C 66,15 80,22 80,25 L 80,40 C 70,30 55,30 50,35 C 45,30 30,30 20,40 L 20,25 C 20,22 34,15 50,15 Z" fill="#FFFFFF" opacity="0.08" clip-path="url(#foursquare-shield-clip-admin-nav)" />
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">FONE Admin</span>
+          <span class="logo-sub">Moderation Portal</span>
+        </div>
+      </a>
+      
+      <div style="display: flex; gap: 16px; align-items: center;">
+        <span class="hero-badge" id="backend-status-badge">Detecting...</span>
+        <button class="btn btn-secondary" id="btn-logout" style="padding: 8px 16px; font-size: 0.85rem;">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="admin-section">
+    <div class="section-container" style="padding-top: 40px;">
+      
+      <div class="admin-header-row">
+        <div class="admin-title-wrap">
+          <h2>Prayer Requests Moderation</h2>
+          <p>Review, filter, approve, and delete submitted entries from the communal feed.</p>
+        </div>
+        <div class="admin-actions">
+          <a href="index.html" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l-7 7 7 7"/></svg>
+            View Live Site
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="hero-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px;">
+        <div class="stat-card glass-panel" style="padding: 20px;">
+          <div class="stat-number" id="stat-total">0</div>
+          <div class="stat-label">Total Submissions</div>
+        </div>
+        <div class="stat-card glass-panel" style="padding: 20px;">
+          <div class="stat-number" id="stat-approved" style="color: var(--accent-green);">0</div>
+          <div class="stat-label">Approved (Public)</div>
+        </div>
+        <div class="stat-card glass-panel" style="padding: 20px;">
+          <div class="stat-number" id="stat-private" style="color: var(--accent-blue);">0</div>
+          <div class="stat-label">Private (Counselling)</div>
+        </div>
+        <div class="stat-card glass-panel" style="padding: 20px;">
+          <div class="stat-number" id="stat-hidden" style="color: var(--accent-gold);">0</div>
+          <div class="stat-label">Pending / Flagged</div>
+        </div>
+      </div>
+
+      <!-- Moderation Filter Toolbar -->
+      <div class="admin-filters">
+        <button class="admin-filter-btn active" data-filter="all">All Submissions <span id="badge-all">0</span></button>
+        <button class="admin-filter-btn" data-filter="public-approved">Public & Approved <span id="badge-approved">0</span></button>
+        <button class="admin-filter-btn" data-filter="private">Private (Counseling) <span id="badge-private">0</span></button>
+        <button class="admin-filter-btn" data-filter="pending-hidden">Pending / Hidden <span id="badge-hidden">0</span></button>
+      </div>
+
+      <!-- Database Table Container -->
+      <div class="admin-table-panel glass-panel">
+        <table class="admin-table" id="admin-data-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Email Address (Private)</th>
+              <th>Category</th>
+              <th>Prayer Request Content</th>
+              <th>Visibility</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-table-body">
+            <!-- Loading Row -->
+            <tr id="admin-loader-row">
+              <td colspan="7" style="text-align: center; padding: 40px 0; color: var(--text-secondary);">
+                <div class="spinner" style="margin: 0 auto 12px;"></div>
+                Loading data streams...
+              </td>
+            </tr>
+            <!-- Empty Row -->
+            <tr id="admin-empty-row" class="id-hidden">
+              <td colspan="7" style="text-align: center; padding: 40px 0; color: var(--text-secondary);">
+                No prayer requests found.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" style="margin-top: 60px;">
+    <div class="footer-container" style="padding: 40px 24px 20px;">
+      <div class="footer-bottom">
+        <p>&copy; 2026 Foursquare National Evangelist (FONE). Admin Panel.</p>
+        <a href="index.html" style="text-decoration: underline;">Back to Website</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase Compat Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <!-- Config and JavaScript Controllers -->
+  <script src="firebase-config.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      initAdminPanel();
+    });
+
+    /* ==========================================================================
+       1. Security Authentication System
+       ========================================================================== */
+    function checkAuth() {
+      const overlay = document.getElementById('login-overlay');
+      const form = document.getElementById('login-form');
+      const passField = document.getElementById('admin-pass-field');
+      const errorMsg = document.getElementById('login-error-msg');
+      const logoutBtn = document.getElementById('btn-logout');
+
+      // Check Session Storage
+      if (sessionStorage.getItem('fone_admin_authenticated') === 'true') {
+        overlay.classList.add('id-hidden');
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inputPass = passField.value;
+
+        if (inputPass === ADMIN_PASSWORD) {
+          sessionStorage.setItem('fone_admin_authenticated', 'true');
+          overlay.classList.add('id-hidden');
+          errorMsg.classList.add('id-hidden');
+          passField.value = '';
+        } else {
+          errorMsg.classList.remove('id-hidden');
+          passField.select();
+        }
+      });
+
+      logoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem('fone_admin_authenticated');
+        overlay.classList.remove('id-hidden');
+        passField.focus();
+      });
+    }
+
+    /* ==========================================================================
+       2. Dashboard Moderation Logic (Firebase / LocalStorage)
+       ========================================================================== */
+    let isFirebase = false;
+    let db = null;
+    let rawPrayers = [];
+    let currentFilter = 'all';
+
+    function initAdminPanel() {
+      const badge = document.getElementById('backend-status-badge');
+
+      // Firebase Check
+      if (typeof firebase !== 'undefined' && firebaseConfig && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
+        try {
+          firebase.initializeApp(firebaseConfig);
+          db = firebase.firestore();
+          isFirebase = true;
+          badge.textContent = "Firebase Mode";
+          badge.style.backgroundColor = "rgba(76, 175, 80, 0.15)";
+          badge.style.color = "var(--accent-green)";
+          badge.style.border = "1px solid rgba(76, 175, 80, 0.3)";
+        } catch (e) {
+          isFirebase = false;
+        }
+      }
+
+      if (!isFirebase) {
+        badge.textContent = "Demo (LocalStorage)";
+        badge.style.backgroundColor = "rgba(255, 193, 7, 0.1)";
+        badge.style.color = "var(--accent-gold)";
+        badge.style.border = "1px solid rgba(255, 193, 7, 0.2)";
+      }
+
+      // Filter Button Event Listeners
+      const filterBtns = document.querySelectorAll('.admin-filter-btn');
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.getAttribute('data-filter');
+          renderAdminTable();
+        });
+      });
+
+      loadAdminData();
+    }
+
+    function loadAdminData() {
+      const loaderRow = document.getElementById('admin-loader-row');
+
+      if (isFirebase) {
+        // Stream all prayers (no matter if public, private, hidden)
+        db.collection('prayers')
+          .orderBy('createdAt', 'desc')
+          .onSnapshot(snapshot => {
+            loaderRow.classList.add('id-hidden');
+            rawPrayers = [];
+            
+            snapshot.forEach(doc => {
+              const data = doc.data();
+              const date = data.createdAt ? data.createdAt.toDate() : new Date();
+              rawPrayers.push({
+                id: doc.id,
+                ...data,
+                createdAt: date
+              });
+            });
+
+            renderAdminTable();
+            updateStats();
+          }, error => {
+            console.error("Firebase admin load failed, falling back:", error);
+            loadLocalStorageData();
+          });
+      } else {
+        loadLocalStorageData();
+      }
+    }
+
+    function loadLocalStorageData() {
+      const loaderRow = document.getElementById('admin-loader-row');
+      loaderRow.classList.add('id-hidden');
+
+      let stored = localStorage.getItem('fone_prayers');
+      if (stored) {
+        try {
+          rawPrayers = JSON.parse(stored).map(p => ({
+            ...p,
+            createdAt: new Date(p.createdAt)
+          }));
+        } catch (e) {
+          rawPrayers = [];
+        }
+      } else {
+        rawPrayers = [];
+      }
+
+      rawPrayers.sort((a, b) => b.createdAt - a.createdAt);
+      renderAdminTable();
+      updateStats();
+    }
+
+    function renderAdminTable() {
+      const tbody = document.getElementById('admin-table-body');
+      const emptyRow = document.getElementById('admin-empty-row');
+      
+      // Clean table rows except loader and empty row
+      const existingRows = tbody.querySelectorAll('tr:not(#admin-loader-row):not(#admin-empty-row)');
+      existingRows.forEach(r => r.remove());
+
+      // Filter prayers
+      const filtered = rawPrayers.filter(p => {
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'public-approved') return p.isPublic === true && p.isApproved === true;
+        if (currentFilter === 'private') return p.isPublic === false;
+        if (currentFilter === 'pending-hidden') return p.isApproved === false && p.isPublic !== false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        emptyRow.classList.remove('id-hidden');
+        return;
+      }
+
+      emptyRow.classList.add('id-hidden');
+
+      filtered.forEach(prayer => {
+        const row = document.createElement('tr');
+        row.setAttribute('data-row-id', prayer.id);
+
+        const dateStr = prayer.createdAt.toLocaleString(undefined, { 
+          month: 'short', day: 'numeric', year: '2-digit', hour: '2-digit', minute: '2-digit' 
+        });
+
+        const visibilityLabel = prayer.isPublic 
+          ? `<span class="prayer-category-badge badge-Singles" style="background-color:rgba(33,150,243,0.15)">Public</span>`
+          : `<span class="prayer-category-badge badge-Deliverance" style="background-color:rgba(156,39,176,0.15)">Private</span>`;
+
+        const statusLabel = prayer.isApproved
+          ? `<span class="prayer-category-badge badge-Healing" style="background-color:rgba(76,175,80,0.15); color:var(--accent-green);">Approved</span>`
+          : `<span class="prayer-category-badge badge-Mothers" style="background-color:rgba(255,193,7,0.15); color:var(--accent-gold);">Hidden</span>`;
+
+        row.innerHTML = `
+          <td>${dateStr}</td>
+          <td><div class="admin-cell-name">${escapeHTML(prayer.name || 'Anonymous')}</div></td>
+          <td><div class="admin-cell-email">${escapeHTML(prayer.email || '—')}</div></td>
+          <td><span class="prayer-category-badge badge-${prayer.category}">${prayer.category}</span></td>
+          <td>
+            <div class="admin-cell-text" onclick="toggleTextExpand(this)" style="cursor:pointer;" title="Click to expand">
+              ${escapeHTML(prayer.text)}
+            </div>
+          </td>
+          <td>
+            <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+              ${visibilityLabel}
+              ${prayer.isPublic ? statusLabel : ''}
+            </div>
+          </td>
+          <td>
+            <div class="admin-action-cols">
+              ${prayer.isPublic ? (
+                prayer.isApproved 
+                  ? `<button class="btn-admin btn-admin-unapprove" onclick="toggleApproval('${prayer.id}', false)">Hide</button>`
+                  : `<button class="btn-admin btn-admin-approve" onclick="toggleApproval('${prayer.id}', true)">Approve</button>`
+              ) : ''}
+              <button class="btn-admin btn-admin-delete" onclick="deletePrayer('${prayer.id}')">Delete</button>
+            </div>
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }
+
+    function updateStats() {
+      const total = rawPrayers.length;
+      const approved = rawPrayers.filter(p => p.isPublic === true && p.isApproved === true).length;
+      const priv = rawPrayers.filter(p => p.isPublic === false).length;
+      const hidden = rawPrayers.filter(p => p.isPublic === true && p.isApproved === false).length;
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-approved').textContent = approved;
+      document.getElementById('stat-private').textContent = priv;
+      document.getElementById('stat-hidden').textContent = hidden;
+
+      document.getElementById('badge-all').textContent = total;
+      document.getElementById('badge-approved').textContent = approved;
+      document.getElementById('badge-private').textContent = priv;
+      document.getElementById('badge-hidden').textContent = hidden;
+    }
+
+    /* ==========================================================================
+       3. Table Interactions
+       ========================================================================== */
+    window.toggleTextExpand = function(el) {
+      el.classList.toggle('expanded');
+    };
+
+    window.toggleApproval = function(id, approveState) {
+      if (isFirebase) {
+        db.collection('prayers').doc(id).update({
+          isApproved: approveState
+        })
+        .catch(err => {
+          console.error("Firebase update approval error:", err);
+          alert("Error updating record.");
+        });
+      } else {
+        let stored = localStorage.getItem('fone_prayers');
+        if (stored) {
+          let prayers = JSON.parse(stored);
+          let idx = prayers.findIndex(p => p.id === id);
+          if (idx !== -1) {
+            prayers[idx].isApproved = approveState;
+            localStorage.setItem('fone_prayers', JSON.stringify(prayers));
+            loadLocalStorageData();
+          }
+        }
+      }
+    };
+
+    window.deletePrayer = function(id) {
+      if (!confirm("Are you sure you want to permanently delete this prayer request? This action cannot be undone.")) return;
+
+      if (isFirebase) {
+        db.collection('prayers').doc(id).delete()
+        .catch(err => {
+          console.error("Firebase delete error:", err);
+          alert("Error deleting record.");
+        });
+      } else {
+        let stored = localStorage.getItem('fone_prayers');
+        if (stored) {
+          let prayers = JSON.parse(stored);
+          let idx = prayers.findIndex(p => p.id === id);
+          if (idx !== -1) {
+            prayers.splice(idx, 1);
+            localStorage.setItem('fone_prayers', JSON.stringify(prayers));
+            loadLocalStorageData();
+          }
+        }
+      }
+    };
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+  </script>
+</body>
+</html>

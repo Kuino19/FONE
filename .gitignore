@@ -1,0 +1,10 @@
+# Firebase credentials - keep private
+firebase-config.js
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/

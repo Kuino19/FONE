@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO Meta Tags -->
+  <title>Testimonies | Foursquare National Evangelist (FONE)</title>
+  <meta name="description" content="Read and share testimonies of God's faithfulness through the FONE network. Answered prayers, healings, deliverances, and breakthrough stories from the Foursquare National Evangelist community.">
+  <meta name="keywords" content="FONE testimonies, Foursquare testimony, answered prayer, healing testimony, deliverance testimony, breakthrough">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Testimonies | Foursquare National Evangelist (FONE)">
+  <meta property="og:description" content="Read real testimonies of God's power at work through the FONE prayer network.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ==========================================
+       Testimony Page Specific Styles
+       ========================================== */
+
+    /* Hero banner */
+    .testimony-hero {
+      min-height: 52vh;
+      padding-top: 130px;
+      padding-bottom: 60px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 30% 40%, rgba(247, 106, 12, 0.2) 0%, transparent 65%),
+                  linear-gradient(160deg, #CF5300 0%, #D4590A 30%, #E07010 60%, #3D1A00 100%);
+      overflow: hidden;
+    }
+    .testimony-hero-inner {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .testimony-hero-stats {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 36px;
+    }
+    .testimony-stat-pill {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 50px;
+      padding: 14px 28px;
+      text-align: center;
+      min-width: 160px;
+    }
+    .testimony-stat-pill .num {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      display: block;
+    }
+    .testimony-stat-pill .lbl {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* Floating flame deco */
+    .flame-deco {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .flame-deco-1 { width: 360px; height: 360px; background: #FFC107; top: -100px; right: -80px; }
+    .flame-deco-2 { width: 280px; height: 280px; background: #FF6D00; bottom: -60px; left: -60px; }
+
+    /* ---- Main Section ---- */
+    .testimony-main {
+      background: var(--bg-page);
+      padding: 70px 0 100px;
+    }
+    .testimony-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 40px;
+      align-items: start;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* ---- Submission Panel ---- */
+    .testimony-form-panel {
+      position: sticky;
+      top: calc(var(--navbar-height) + 20px);
+      background: var(--bg-card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--border-radius-lg);
+      padding: 32px 28px;
+      box-shadow: var(--shadow-md);
+    }
+    .testimony-form-panel .panel-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .testimony-form-panel .panel-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .cat-pill {
+      padding: 6px 14px;
+      border-radius: 50px;
+      border: 1.5px solid var(--card-border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+    }
+    .cat-pill:hover,
+    .cat-pill.selected {
+      background: var(--accent-orange);
+      color: #fff;
+      border-color: var(--accent-orange);
+    }
+
+    /* ---- Testimony Feed ---- */
+    .testimony-feed-panel { min-height: 400px; }
+    .testimony-feed-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .testimony-feed-count {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .testimony-search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--card-border);
+      border-radius: 50px;
+      padding: 10px 18px;
+      flex: 1;
+      max-width: 320px;
+    }
+    .testimony-search-box input {
+      border: none;
+      background: none;
+      outline: none;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      width: 100%;
+    }
+    .testimony-search-box input::placeholder { color: var(--text-muted); }
+
+    /* Filter Bar */
+    .testimony-filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .filter-pill {
+      padding: 7px 16px;
+      border-radius: 50px;
+      border: 1.5px solid var(--card-border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+    }
+    .filter-pill:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
+    .filter-pill.active {
+      background: var(--accent-orange);
+      color: #fff;
+      border-color: var(--accent-orange);
+    }
+
+    /* ---- Testimony Card ---- */
+    .testimony-card {
+      background: var(--bg-card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--border-radius-lg);
+      padding: 26px 28px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+      animation: fadeIn 0.4s ease;
+    }
+    .testimony-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: rgba(247, 106, 12, 0.25);
+      transform: translateY(-2px);
+    }
+    .testimony-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .testimony-card-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .testimony-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-orange), #FFB300);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #fff;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .testimony-user-name {
+      font-weight: 700;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+    .testimony-time {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .testimony-category-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 50px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+    .tag-Healing { background: rgba(16,185,129,0.12); color: #059669; }
+    .tag-Deliverance { background: rgba(139,92,246,0.12); color: #7c3aed; }
+    .tag-Financial { background: rgba(245,158,11,0.12); color: #d97706; }
+    .tag-Marriage { background: rgba(236,72,153,0.12); color: #db2777; }
+    .tag-Fruitfulness { background: rgba(99,102,241,0.12); color: #4f46e5; }
+    .tag-General { background: rgba(247,106,12,0.1); color: #c04c00; }
+
+    .testimony-text {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 18px;
+    }
+    .testimony-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--card-border);
+    }
+    .btn-amen {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 18px;
+      border-radius: 50px;
+      border: 1.5px solid var(--card-border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-amen svg { transition: transform 0.2s ease; }
+    .btn-amen:hover,
+    .btn-amen.active {
+      background: rgba(247, 106, 12, 0.08);
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
+    }
+    .btn-amen.active { background: rgba(247, 106, 12, 0.12); }
+    .amen-count {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Empty / Loading States */
+    .feed-loader, .feed-empty {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-secondary);
+    }
+    .feed-loader .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(247,106,12,0.2);
+      border-top-color: var(--accent-orange);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .feed-empty svg { opacity: 0.3; margin-bottom: 12px; color: var(--accent-orange); }
+
+    /* Featured/highlighted testimony */
+    .testimony-card.featured {
+      border-color: rgba(247, 106, 12, 0.35);
+      background: linear-gradient(135deg, rgba(247,106,12,0.04) 0%, var(--bg-card) 100%);
+    }
+    .featured-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent-orange);
+      background: rgba(247,106,12,0.1);
+      padding: 3px 10px;
+      border-radius: 50px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Success box */
+    .testimony-success-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: var(--border-radius-md);
+      color: #065f46;
+      margin-top: 20px;
+    }
+    .testimony-success-alert h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; }
+    .testimony-success-alert p { font-size: 0.83rem; opacity: 0.85; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .testimony-layout {
+        grid-template-columns: 1fr;
+      }
+      .testimony-form-panel {
+        position: relative;
+        top: auto;
+      }
+    }
+    @media (max-width: 600px) {
+      .testimony-layout { padding: 0 16px; }
+      .testimony-card { padding: 20px 18px; }
+      .testimony-feed-header { flex-direction: column; align-items: flex-start; }
+      .testimony-search-box { max-width: 100%; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo-link">
+        <div class="logo-icon">
+          <svg viewBox="0 0 100 100" width="45" height="45" style="filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));">
+            <defs>
+              <clipPath id="foursquare-shield-clip-test-nav">
+                <path d="M 50,12 C 68,12 85,20 85,25 L 85,55 C 85,75 65,85 50,90 C 35,85 15,75 15,55 L 15,25 C 15,20 32,12 50,12 Z" />
+              </clipPath>
+            </defs>
+            <path d="M 50,10 C 69,10 87,18 87,23 L 87,55 C 87,77 66,88 50,93 C 34,88 13,77 13,55 L 13,23 C 13,18 31,10 50,10 Z" fill="#FFE082" />
+            <path d="M 50,12 C 68,12 85,20 85,25 L 85,55 C 85,75 65,85 50,90 C 35,85 15,75 15,55 L 15,25 C 15,20 32,12 50,12 Z" fill="#FFB300" />
+            <g clip-path="url(#foursquare-shield-clip-test-nav)">
+              <rect x="0" y="0" width="50" height="50" fill="#D32F2F" />
+              <rect x="50" y="0" width="50" height="50" fill="#FFC107" />
+              <rect x="0" y="50" width="50" height="50" fill="#1976D2" />
+              <rect x="50" y="50" width="50" height="50" fill="#7B1FA2" />
+              <line x1="50" y1="0" x2="50" y2="100" stroke="#FFFFFF" stroke-width="2.5" />
+              <line x1="0" y1="50" x2="100" y2="50" stroke="#FFFFFF" stroke-width="2.5" />
+              <path d="M 32.5,19 L 32.5,37 M 25,25 L 40,25" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" />
+              <path d="M 68,22 C 66,22 62,24 60,26 C 60,28 62,29 65,29 C 63,33 65,36 67,37 C 69,37 70,34 71,32 C 73,32 75,28 73,26 C 71,24 70,22 68,22 Z" fill="#FFFFFF" />
+              <path d="M 60,26 C 60,22 65,18 68,18 C 70,18 70,22 68,22" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+              <path d="M 25,62 C 25,68 30,73 32.5,73 C 35,73 40,68 40,62 Z" fill="#FFFFFF" />
+              <path d="M 32.5,73 L 32.5,78 M 27,78 L 38,78" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+              <line x1="24" y1="62" x2="41" y2="62" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+              <path d="M 59,74 L 76,74 L 76,66 L 71.5,70 L 67.5,62 L 63.5,70 L 59,66 Z" fill="#FFFFFF" />
+              <line x1="59" y1="74" x2="76" y2="74" stroke="#7B1FA2" stroke-width="1.5" />
+              <circle cx="67.5" cy="71" r="1.2" fill="#7B1FA2" />
+              <circle cx="63" cy="71" r="1" fill="#7B1FA2" />
+              <circle cx="72" cy="71" r="1" fill="#7B1FA2" />
+            </g>
+            <path d="M 50,15 C 66,15 80,22 80,25 L 80,40 C 70,30 55,30 50,35 C 45,30 30,30 20,40 L 20,25 C 20,22 34,15 50,15 Z" fill="#FFFFFF" opacity="0.08" clip-path="url(#foursquare-shield-clip-test-nav)" />
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">FONE</span>
+          <span class="logo-sub">National Evangelist</span>
+        </div>
+      </a>
+
+      <nav class="nav-menu" id="nav-menu">
+        <a href="index.html#hero" class="nav-item">Home</a>
+        <a href="index.html#about" class="nav-item">History</a>
+        <a href="index.html#programs" class="nav-item">Programs</a>
+        <a href="index.html#leadership" class="nav-item">Leadership</a>
+        <a href="testimony.html" class="nav-item active">Testimonies</a>
+        <a href="prayer-wall.html" class="nav-item btn-nav">Prayer Wall</a>
+      </nav>
+
+      <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="testimony-hero">
+    <div class="flame-deco flame-deco-1"></div>
+    <div class="flame-deco flame-deco-2"></div>
+    <div class="hero-overlay" style="background: radial-gradient(ellipse at 50% 100%, rgba(61,26,0,0.3) 0%, transparent 70%);"></div>
+
+    <div class="testimony-hero-inner">
+      <span class="hero-badge" style="margin-bottom: 16px; display: inline-block;">God at Work</span>
+      <h1 class="hero-title" style="font-size: clamp(2rem, 5vw, 3.5rem);">
+        Testimonies of <span class="gradient-text">Faithfulness</span>
+      </h1>
+      <p class="hero-description" style="max-width: 600px; margin: 0 auto 0;">
+        Every testimony is proof that God still answers prayer. Share what He has done for you and encourage the body of Christ.
+      </p>
+
+      <div class="testimony-hero-stats">
+        <div class="testimony-stat-pill">
+          <span class="num" id="hero-testimony-count">0</span>
+          <span class="lbl">Testimonies Shared</span>
+        </div>
+        <div class="testimony-stat-pill">
+          <span class="num" id="hero-amen-count">0</span>
+          <span class="lbl">Amens Given</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="testimony-main">
+    <div class="testimony-layout">
+
+      <!-- Left: Submission Form -->
+      <div class="testimony-form-panel">
+        <h3 class="panel-title">Share Your Testimony</h3>
+        <p class="panel-subtitle">Let the church rejoice with you. Tell us what God has done — big or small, every testimony glorifies Him.</p>
+
+        <form id="testimony-form">
+          <div class="form-group">
+            <label for="test-name">Your Name</label>
+            <input type="text" id="test-name" placeholder="Enter name or leave blank for 'Anonymous'">
+          </div>
+
+          <div class="form-group">
+            <label>Category</label>
+            <div class="category-pills">
+              <button type="button" class="cat-pill selected" data-cat="General">General</button>
+              <button type="button" class="cat-pill" data-cat="Healing">Healing</button>
+              <button type="button" class="cat-pill" data-cat="Deliverance">Deliverance</button>
+              <button type="button" class="cat-pill" data-cat="Financial">Financial</button>
+              <button type="button" class="cat-pill" data-cat="Marriage">Marriage</button>
+              <button type="button" class="cat-pill" data-cat="Fruitfulness">Fruitfulness</button>
+            </div>
+            <input type="hidden" id="test-category" value="General">
+          </div>
+
+          <div class="form-group">
+            <label for="test-text">Your Testimony</label>
+            <textarea id="test-text" rows="7" placeholder="Share what God has done for you. Be specific — it builds others' faith!" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="btn-submit-testimony">
+            <span>Share My Testimony</span>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" class="btn-icon"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </form>
+
+        <div class="testimony-success-alert id-hidden" id="testimony-success-box">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3"/></svg>
+          <div>
+            <h4>Testimony Shared! 🎉</h4>
+            <p>Thank you for sharing. Your testimony is a weapon of warfare and a source of faith for others.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Feed -->
+      <div class="testimony-feed-panel">
+        <!-- Search & Count Row -->
+        <div class="testimony-feed-header">
+          <div class="testimony-search-box">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="testimony-search" placeholder="Search testimonies...">
+          </div>
+          <span class="testimony-feed-count" id="testimony-feed-count">Loading...</span>
+        </div>
+
+        <!-- Category filter pills -->
+        <div class="testimony-filter-bar">
+          <button class="filter-pill active" data-filter="All">All</button>
+          <button class="filter-pill" data-filter="Healing">Healing</button>
+          <button class="filter-pill" data-filter="Deliverance">Deliverance</button>
+          <button class="filter-pill" data-filter="Financial">Financial</button>
+          <button class="filter-pill" data-filter="Marriage">Marriage</button>
+          <button class="filter-pill" data-filter="Fruitfulness">Fruitfulness</button>
+          <button class="filter-pill" data-filter="General">General</button>
+        </div>
+
+        <!-- Feed -->
+        <div id="testimony-feed">
+          <div class="feed-loader" id="testimony-loader">
+            <div class="spinner"></div>
+            <p>Loading testimonies...</p>
+          </div>
+          <div class="feed-empty id-hidden" id="testimony-empty">
+            <svg viewBox="0 0 24 24" width="52" height="52" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <h3 style="color: var(--text-primary); margin-bottom: 6px;">No testimonies found</h3>
+            <p style="color: var(--text-secondary);">Be the first to share what God has done for you!</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-info">
+          <div class="footer-logo">
+            <svg viewBox="0 0 100 100" width="35" height="35" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+              <defs>
+                <clipPath id="foursquare-shield-clip-test-foot">
+                  <path d="M 50,12 C 68,12 85,20 85,25 L 85,55 C 85,75 65,85 50,90 C 35,85 15,75 15,55 L 15,25 C 15,20 32,12 50,12 Z" />
+                </clipPath>
+              </defs>
+              <path d="M 50,10 C 69,10 87,18 87,23 L 87,55 C 87,77 66,88 50,93 C 34,88 13,77 13,55 L 13,23 C 13,18 31,10 50,10 Z" fill="#FFE082" />
+              <path d="M 50,12 C 68,12 85,20 85,25 L 85,55 C 85,75 65,85 50,90 C 35,85 15,75 15,55 L 15,25 C 15,20 32,12 50,12 Z" fill="#FFB300" />
+              <g clip-path="url(#foursquare-shield-clip-test-foot)">
+                <rect x="0" y="0" width="50" height="50" fill="#D32F2F" />
+                <rect x="50" y="0" width="50" height="50" fill="#FFC107" />
+                <rect x="0" y="50" width="50" height="50" fill="#1976D2" />
+                <rect x="50" y="50" width="50" height="50" fill="#7B1FA2" />
+                <line x1="50" y1="0" x2="50" y2="100" stroke="#FFFFFF" stroke-width="2.5" />
+                <line x1="0" y1="50" x2="100" y2="50" stroke="#FFFFFF" stroke-width="2.5" />
+                <path d="M 32.5,19 L 32.5,37 M 25,25 L 40,25" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" />
+                <path d="M 68,22 C 66,22 62,24 60,26 C 60,28 62,29 65,29 C 63,33 65,36 67,37 C 69,37 70,34 71,32 C 73,32 75,28 73,26 C 71,24 70,22 68,22 Z" fill="#FFFFFF" />
+                <path d="M 60,26 C 60,22 65,18 68,18 C 70,18 70,22 68,22" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M 25,62 C 25,68 30,73 32.5,73 C 35,73 40,68 40,62 Z" fill="#FFFFFF" />
+                <path d="M 32.5,73 L 32.5,78 M 27,78 L 38,78" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+                <line x1="24" y1="62" x2="41" y2="62" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+                <path d="M 59,74 L 76,74 L 76,66 L 71.5,70 L 67.5,62 L 63.5,70 L 59,66 Z" fill="#FFFFFF" />
+                <line x1="59" y1="74" x2="76" y2="74" stroke="#7B1FA2" stroke-width="1.5" />
+                <circle cx="67.5" cy="71" r="1.2" fill="#7B1FA2" />
+                <circle cx="63" cy="71" r="1" fill="#7B1FA2" />
+                <circle cx="72" cy="71" r="1" fill="#7B1FA2" />
+              </g>
+              <path d="M 50,15 C 66,15 80,22 80,25 L 80,40 C 70,30 55,30 50,35 C 45,30 30,30 20,40 L 20,25 C 20,22 34,15 50,15 Z" fill="#FFFFFF" opacity="0.08" clip-path="url(#foursquare-shield-clip-test-foot)" />
+            </svg>
+            <span>Foursquare National Evangelist</span>
+          </div>
+          <p class="footer-bio">Establishing the kingdom, maintaining deliverance ministry, counseling, and equipping chapters across all Foursquare Districts in Nigeria.</p>
+        </div>
+
+        <div class="footer-links">
+          <h4>Quick Navigation</h4>
+          <ul>
+            <li><a href="index.html#hero">Home</a></li>
+            <li><a href="index.html#about">History</a></li>
+            <li><a href="index.html#programs">Schedules</a></li>
+            <li><a href="index.html#leadership">Leadership Board</a></li>
+            <li><a href="testimony.html">Testimonies</a></li>
+            <li><a href="prayer-wall.html">Prayer Wall</a></li>
+            <li><a href="admin.html" class="admin-link">Admin Dashboard</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-contact">
+          <h4>Vigil & Counsel Venues</h4>
+          <p><strong>Monthly Vigil:</strong> Foursquare International Conference Centre, Idimu, Lagos.</p>
+          <p><strong>Hours of Dominion:</strong> Foursquare International Conference Centre, Orisunmibare Idimu, Lagos.</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Foursquare National Evangelist (FONE). All Rights Reserved.</p>
+        <p class="design-credit">Foursquare Gospel Church in Nigeria.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase Compat Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <!-- App scripts -->
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+  <script src="testimony.js"></script>
+
+</body>
+</html>
