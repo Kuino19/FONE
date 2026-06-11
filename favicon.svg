@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <clipPath id="shield">
+      <path d="M 50,12 C 68,12 85,20 85,25 L 85,55 C 85,75 65,85 50,90 C 35,85 15,75 15,55 L 15,25 C 15,20 32,12 50,12 Z" />
+    </clipPath>
+  </defs>
+  <!-- Shield outline -->
+  <path d="M 50,10 C 69,10 87,18 87,23 L 87,55 C 87,77 66,88 50,93 C 34,88 13,77 13,55 L 13,23 C 13,18 31,10 50,10 Z" fill="#FFE082" />
+  <path d="M 50,12 C 68,12 85,20 85,25 L 85,55 C 85,75 65,85 50,90 C 35,85 15,75 15,55 L 15,25 C 15,20 32,12 50,12 Z" fill="#FFB300" />
+  <!-- Four quadrant fill -->
+  <g clip-path="url(#shield)">
+    <rect x="0" y="0" width="50" height="50" fill="#D32F2F" />
+    <rect x="50" y="0" width="50" height="50" fill="#FFC107" />
+    <rect x="0" y="50" width="50" height="50" fill="#1976D2" />
+    <rect x="50" y="50" width="50" height="50" fill="#7B1FA2" />
+    <!-- Cross lines -->
+    <line x1="50" y1="0" x2="50" y2="100" stroke="#FFFFFF" stroke-width="2.5" />
+    <line x1="0" y1="50" x2="100" y2="50" stroke="#FFFFFF" stroke-width="2.5" />
+    <!-- Cross symbol (top-left) -->
+    <path d="M 32.5,19 L 32.5,37 M 25,25 L 40,25" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" />
+    <!-- Dove symbol (top-right) -->
+    <path d="M 68,22 C 66,22 62,24 60,26 C 60,28 62,29 65,29 C 63,33 65,36 67,37 C 69,37 70,34 71,32 C 73,32 75,28 73,26 C 71,24 70,22 68,22 Z" fill="#FFFFFF" />
+    <path d="M 60,26 C 60,22 65,18 68,18 C 70,18 70,22 68,22" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+    <!-- Cup symbol (bottom-left) -->
+    <path d="M 25,62 C 25,68 30,73 32.5,73 C 35,73 40,68 40,62 Z" fill="#FFFFFF" />
+    <path d="M 32.5,73 L 32.5,78 M 27,78 L 38,78" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+    <line x1="24" y1="62" x2="41" y2="62" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+    <!-- Crown symbol (bottom-right) -->
+    <path d="M 59,74 L 76,74 L 76,66 L 71.5,70 L 67.5,62 L 63.5,70 L 59,66 Z" fill="#FFFFFF" />
+    <line x1="59" y1="74" x2="76" y2="74" stroke="#7B1FA2" stroke-width="1.5" />
+    <circle cx="67.5" cy="71" r="1.2" fill="#7B1FA2" />
+    <circle cx="63" cy="71" r="1" fill="#7B1FA2" />
+    <circle cx="72" cy="71" r="1" fill="#7B1FA2" />
+  </g>
+  <!-- Gloss highlight -->
+  <path d="M 50,15 C 66,15 80,22 80,25 L 80,40 C 70,30 55,30 50,35 C 45,30 30,30 20,40 L 20,25 C 20,22 34,15 50,15 Z" fill="#FFFFFF" opacity="0.08" clip-path="url(#shield)" />
+</svg>
