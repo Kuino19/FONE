@@ -80,7 +80,12 @@
       <div class="prayer-grid">
         
         <!-- Submission Form (Left Side) -->
-        <div class="prayer-form-panel glass-panel">
+        <div class="prayer-form-panel">
+          <div style="margin-bottom: 24px; text-align: center;">
+            <p style="font-family: 'Outfit', sans-serif; font-style: italic; color: #C84E00; font-size: 0.95rem; line-height: 1.5; margin: 0;">
+              "The prayer of a righteous person is powerful and effective."<br><span style="font-size: 0.8rem; font-weight: 700; font-style: normal; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 6px; display: inline-block;">— James 5:16</span>
+            </p>
+          </div>
           <h3 class="panel-title">Submit a Prayer Request</h3>
           <p class="panel-subtitle">Your request will be seen by our pastors and the FONE network.</p>
           
@@ -96,14 +101,15 @@
             </div>
 
             <div class="form-group">
-              <label for="form-category">Request Category</label>
-              <select id="form-category" required>
-                <option value="General">General Prayer</option>
-                <option value="Healing">Healing & Health</option>
-                <option value="Deliverance">Deliverance & Freedom</option>
-                <option value="Singles">Singles fellowship</option>
-                <option value="Mothers">Joyful Mothers (Fruitfulness)</option>
-              </select>
+              <label>Request Category</label>
+              <div class="category-pills" id="prayer-cat-pills" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <button type="button" class="cat-pill selected" data-cat="General">General Prayer</button>
+                <button type="button" class="cat-pill" data-cat="Healing">Healing & Health</button>
+                <button type="button" class="cat-pill" data-cat="Deliverance">Deliverance</button>
+                <button type="button" class="cat-pill" data-cat="Singles">Singles</button>
+                <button type="button" class="cat-pill" data-cat="Mothers">Mothers</button>
+              </div>
+              <input type="hidden" id="form-category" value="General">
             </div>
 
             <div class="form-group">
@@ -259,5 +265,28 @@
   <script src="firebase-config.js"></script>
   <script src="app.js"></script>
 
+  <script>
+    // Handle category pill selection for prayer form
+    document.addEventListener('DOMContentLoaded', () => {
+      const pills = document.querySelectorAll('#prayer-cat-pills .cat-pill');
+      const hiddenInput = document.getElementById('form-category');
+      
+      pills.forEach(pill => {
+        pill.addEventListener('click', (e) => {
+          e.preventDefault();
+          // Remove selected from all
+          pills.forEach(p => p.classList.remove('selected'));
+          p.style.backgroundColor = 'transparent';
+          p.style.color = 'inherit';
+          
+          // Add to clicked
+          pill.classList.add('selected');
+          
+          // Update hidden input
+          hiddenInput.value = pill.getAttribute('data-cat');
+        });
+      });
+    });
+  </script>
 </body>
 </html>

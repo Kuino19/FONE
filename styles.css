@@ -394,7 +394,7 @@ img, svg {
   background-color: var(--text-primary); /* Charcoal when scrolled */
 }
 
-/* 6. Hero Section (Foursquare.org Dark Slate Theme for High Impact Hero) */
+/* 6. Hero Section */
 .hero-section {
   min-height: 100vh;
   padding-top: var(--navbar-height);
@@ -402,8 +402,14 @@ img, svg {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse at 30% 50%, rgba(247, 106, 12, 0.18) 0%, transparent 65%),
-              linear-gradient(160deg, #CF5300 0%, #D4590A 25%, #E07010 55%, #3D1A00 100%);
+  background-color: #C84E00;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 10px,
+    rgba(0,0,0,0.04) 10px,
+    rgba(0,0,0,0.04) 11px
+  );
   color: var(--text-light);
   overflow: hidden;
 }
@@ -419,29 +425,7 @@ img, svg {
 }
 
 .hero-background-shapes .shape {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.12;
-  z-index: 0;
-  animation: float 25s infinite alternate;
-}
-
-.shape-1 {
-  width: 400px;
-  height: 400px;
-  background-color: var(--accent-gold);
-  top: -80px;
-  left: -100px;
-}
-
-.shape-2 {
-  width: 500px;
-  height: 500px;
-  background-color: var(--accent-blue);
-  bottom: -100px;
-  right: -50px;
-  animation-delay: -7s !important;
+  display: none; /* Removed — these floating blobs are AI filler */
 }
 
 .hero-content-wrapper {
@@ -561,18 +545,21 @@ img, svg {
 }
 
 .hero-title {
-  font-size: clamp(2.5rem, 5vw, 4.25rem);
-  line-height: 1.15;
-  margin-bottom: 24px;
+  font-size: clamp(3.2rem, 7vw, 6.5rem);
+  line-height: 1.0;
+  margin-bottom: 28px;
   font-weight: 900;
-  color: var(--text-light);
+  color: #FFFFFF;
+  letter-spacing: -0.03em;
 }
 
 .hero-description {
-  font-size: clamp(1.1rem, 2vw, 1.2rem);
-  color: var(--text-light-muted);
-  margin-bottom: 36px;
-  font-weight: 300;
+  font-size: clamp(1rem, 1.8vw, 1.15rem);
+  color: rgba(255,255,255,0.78);
+  margin-bottom: 40px;
+  font-weight: 400;
+  max-width: 520px;
+  line-height: 1.7;
 }
 
 .hero-actions {
@@ -628,9 +615,14 @@ img, svg {
   100% { transform: translate(-15px, -40px) scale(0.95); }
 }
 
-/* 7. History Timeline Section (Light, Warm, structured) */
+/* 7. History Timeline Section — Warm cream, feels human */
 .about-section {
-  background-color: var(--bg-deep);
+  background-color: #FDF8F2;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.about-section .section-title {
+  color: #1A202C;
 }
 
 .timeline-container {
@@ -646,7 +638,7 @@ img, svg {
   bottom: 0;
   left: 50%;
   width: 2px;
-  background: linear-gradient(180deg, rgba(247, 106, 12, 0.1) 0%, var(--accent-gold) 15%, var(--accent-gold) 85%, rgba(247, 106, 12, 0.1) 100%);
+  background: linear-gradient(180deg, rgba(200,78,0,0.1) 0%, #C84E00 15%, #C84E00 85%, rgba(200,78,0,0.1) 100%);
   transform: translateX(-50%);
 }
 
@@ -677,9 +669,9 @@ img, svg {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background-color: var(--bg-deep);
-  border: 3.5px solid var(--accent-gold);
-  box-shadow: 0 0 8px var(--accent-gold-glow);
+  background-color: #FDF8F2;
+  border: 3.5px solid #C84E00;
+  box-shadow: 0 0 8px rgba(200,78,0,0.2);
   z-index: 5;
 }
 
@@ -691,12 +683,17 @@ img, svg {
 .timeline-content {
   padding: 28px;
   width: 100%;
-  border-top: 3px solid var(--accent-gold);
+  background: #FFFFFF;
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 4px; /* Sharper corners — less AI */
+  border-left: 4px solid #C84E00;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .timeline-content:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
 /* Timeline with Image Layout */
@@ -712,7 +709,7 @@ img, svg {
   height: 80px;
   border-radius: var(--border-radius-md);
   overflow: hidden;
-  border: 2px solid var(--accent-gold);
+  border: 2px solid #C84E00;
   box-shadow: 0 4px 10px rgba(26, 32, 44, 0.08);
 }
 
@@ -737,29 +734,48 @@ img, svg {
 .timeline-date {
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  color: var(--accent-gold);
-  font-size: 0.9rem;
+  color: #C84E00;
+  font-size: 0.82rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   margin-bottom: 6px;
 }
 
 .timeline-title {
-  font-size: 1.25rem;
-  margin-bottom: 12px;
-  color: var(--text-primary);
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+  color: #1A202C;
+  font-weight: 800;
 }
 
 .timeline-text {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  color: #4A5568;
+  font-size: 0.93rem;
+  line-height: 1.7;
 }
 
-/* 8. Programs Section (Warm Grey background, solid white cards) */
+/* 8. Programs Section — Deep navy, strong visual break */
 .programs-section {
-  background-color: var(--bg-dark);
+  background-color: #111827;
+  color: #F9FAFB;
 }
+
+.programs-section .section-subtitle {
+  color: #FBBF24;
+}
+
+.programs-section .section-title {
+  color: #FFFFFF;
+}
+
+.programs-section .section-intro {
+  color: rgba(255,255,255,0.6);
+}
+
+.programs-section .header-divider {
+  background-color: #FBBF24;
+}
+
 
 .countdown-banner {
   max-width: 900px;
@@ -769,16 +785,16 @@ img, svg {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  border: 1px solid rgba(247, 106, 12, 0.15);
-  box-shadow: var(--card-shadow);
-  border-radius: var(--border-radius-md);
-  background: var(--bg-deep);
+  background: #1F2937;
+  border-left: 4px solid #FBBF24;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  border-radius: 4px;
 }
 
 .countdown-heading {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
-  color: var(--text-muted);
+  color: #9CA3AF;
   text-transform: uppercase;
   font-size: 0.8rem;
   letter-spacing: 0.08em;
@@ -788,14 +804,14 @@ img, svg {
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
   font-size: 1.1rem;
-  color: var(--text-primary);
+  color: #FFFFFF;
 }
 
 .time-block span:first-child {
   font-family: 'Outfit', sans-serif;
   font-size: 1.75rem;
   font-weight: 900;
-  color: var(--accent-gold);
+  color: #FBBF24;
 }
 
 .programs-grid {
@@ -809,17 +825,26 @@ img, svg {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: #1F2937;
+  border-radius: 4px;
+  border-left: 4px solid #4B5563;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .program-card:hover {
   transform: translateY(-5px);
-  box-shadow: var(--card-shadow-hover);
-  border-color: rgba(247, 106, 12, 0.15);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.3);
 }
 
 .program-card.highlighted {
-  border-color: rgba(247, 106, 12, 0.25);
-  border-top: 4px solid var(--accent-gold);
+  border-left-color: #C84E00;
+}
+.program-card.weekly {
+  border-left-color: #1976D2;
+}
+.program-card.monthly {
+  border-left-color: #7B1FA2;
 }
 
 .program-type {
@@ -882,18 +907,18 @@ img, svg {
   padding-top: 16px;
 }
 
-/* 9. Leadership Section (Slate contrast block) */
+/* 9. Leadership Section (Clean White block) */
 .leadership-section {
-  background-color: var(--bg-slate-dark);
-  color: var(--text-light);
+  background-color: #FFFFFF;
+  color: #1A202C;
 }
 
 .leadership-section h2 {
-  color: var(--text-light);
+  color: #1A202C;
 }
 
 .leadership-section .section-intro {
-  color: var(--text-light-muted);
+  color: #4A5568;
 }
 
 .leadership-tabs {
@@ -908,22 +933,22 @@ img, svg {
   border-radius: 30px;
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
-  color: var(--text-light-muted);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.02);
-  transition: all var(--transition-fast);
+  color: #4A5568;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #FDF8F2;
+  transition: all 0.25s ease;
 }
 
 .tab-btn:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  color: var(--text-light);
+  border-color: rgba(0, 0, 0, 0.2);
+  color: #1A202C;
 }
 
 .tab-btn.active {
-  background-color: var(--accent-gold);
-  border-color: var(--accent-gold);
+  background-color: #C84E00;
+  border-color: #C84E00;
   color: #FFFFFF;
-  box-shadow: 0 4px 15px var(--accent-gold-glow);
+  box-shadow: 0 4px 15px rgba(200, 78, 0, 0.2);
 }
 
 .tab-content {
@@ -941,9 +966,10 @@ img, svg {
   padding: 20px 24px;
   text-align: center;
   font-size: 1.05rem;
-  color: var(--text-light-muted);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.02);
+  color: #4A5568;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #FDF8F2;
+  border-radius: 4px;
 }
 
 /* GO Banner inside Board Panel */
@@ -955,8 +981,9 @@ img, svg {
   max-width: 850px;
   margin: 0 auto 40px;
   padding: 24px;
-  background: rgba(255, 255, 255, 0.02);
-  border: var(--card-border-dark);
+  background: #FDF8F2;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 4px;
 }
 
 .board-go-banner .go-avatar {
@@ -965,8 +992,8 @@ img, svg {
   height: 90px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid var(--accent-gold);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  border: 3px solid #C84E00;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .board-go-banner .go-avatar img {
@@ -977,7 +1004,7 @@ img, svg {
 
 .board-go-banner .go-info h3 {
   font-size: 1.35rem;
-  color: var(--text-light);
+  color: #1A202C;
   margin-bottom: 6px;
 }
 
@@ -985,7 +1012,7 @@ img, svg {
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: var(--text-light-muted);
+  color: #4A5568;
 }
 
 @media (max-width: 768px) {
@@ -1003,17 +1030,18 @@ img, svg {
 }
 
 .leadership-section .leader-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: var(--card-border-dark);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  border-radius: var(--border-radius-md);
+  background: #FFFFFF;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-top: 4px solid #C84E00;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+  border-radius: 4px;
   padding: 30px 24px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .leadership-section .leader-card:hover {
   transform: translateY(-5px);
-  border-color: rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.08);
 }
 
 .leader-avatar {
@@ -1061,13 +1089,14 @@ img, svg {
 .patron-avatar::after { border-color: rgba(123, 31, 162, 0.3); }
 
 .leadership-section .leader-name {
-  color: var(--text-light);
-  font-size: 1.2rem;
+  color: #1A202C;
+  font-size: 1.25rem;
   margin-bottom: 6px;
+  font-weight: 800;
 }
 
 .leader-role {
-  color: var(--accent-gold);
+  color: #C84E00;
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
@@ -1079,7 +1108,7 @@ img, svg {
 .leader-role .small-text {
   display: block;
   font-size: 0.7rem;
-  color: var(--text-light-muted);
+  color: #4A5568;
   text-transform: none;
   font-weight: 400;
   letter-spacing: 0;
@@ -1087,9 +1116,9 @@ img, svg {
 }
 
 .leader-desc {
-  color: var(--text-light-muted);
-  font-size: 0.875rem;
-  line-height: 1.55;
+  color: #4A5568;
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 /* 10. Prayer Center Section (Light Theme Warm Sand background) */
@@ -1106,26 +1135,31 @@ img, svg {
 
 .prayer-form-panel {
   padding: 36px;
-  border-top: 4px solid var(--accent-gold);
+  background: #FDF8F2;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-top: 4px solid #C84E00;
+  border-radius: 4px;
   position: sticky;
   top: calc(var(--navbar-height-scroll) + 30px);
   z-index: 10;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
 }
 
 .panel-title {
   font-size: 1.5rem;
   margin-bottom: 8px;
+  color: #1A202C;
 }
 
 .panel-subtitle {
-  color: var(--text-secondary);
+  color: #4A5568;
   font-size: 0.9rem;
   margin-bottom: 28px;
 }
 
 /* Forms Styling */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .form-group label {
@@ -1134,37 +1168,37 @@ img, svg {
   font-weight: 700;
   font-size: 0.875rem;
   margin-bottom: 8px;
-  color: var(--text-secondary);
+  color: #1A202C;
 }
 
 .form-group label .help-text {
   font-family: 'Inter', sans-serif;
   font-weight: 400;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: #718096;
   display: inline-block;
   margin-left: 4px;
 }
 
-.form-group input,
+.form-group input:not([type="checkbox"]),
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 12px 16px;
-  border-radius: var(--border-radius-sm);
-  background-color: #FFFFFF;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  color: var(--text-primary);
+  padding: 12px 0 8px 0;
+  border-radius: 0;
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+  color: #1A202C;
   font-size: 0.95rem;
-  transition: all var(--transition-fast);
+  transition: all 0.25s ease;
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
-  border-color: var(--accent-gold);
-  background-color: #FFFFFF;
-  box-shadow: 0 0 8px var(--accent-gold-glow);
+  border-bottom-color: #C84E00;
+  outline: none;
 }
 
 .checkbox-group {
@@ -2068,4 +2102,47 @@ img, svg {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+.cat-pill {
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(0,0,0,0.1);
+  background: transparent;
+  color: #4A5568;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+}
+.cat-pill:hover,
+.cat-pill.selected {
+  background: #C84E00;
+  color: #fff;
+  border-color: #C84E00;
+}
+
+#btn-submit-request, #btn-submit-testimony {
+  width: 100%;
+  background-color: #C84E00;
+  color: #fff;
+  border-radius: 4px;
+  padding: 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 15px rgba(200, 78, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#btn-submit-request:hover, #btn-submit-testimony:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(200, 78, 0, 0.3);
 }
