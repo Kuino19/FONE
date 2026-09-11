@@ -2146,3 +2146,51 @@ img, svg {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(200, 78, 0, 0.3);
 }
+
+.countdown-timer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.time-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.time-block .time-lbl {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: -2px;
+}
+
+.time-separator {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: -15px;
+}
+
+.program-card .program-name {
+  color: #FFFFFF;
+}
+
+.program-card .program-time {
+  color: #9CA3AF;
+}
+
+.program-card .program-details {
+  color: #D1D5DB;
+}
+
+.program-card .program-hours {
+  color: #FBBF24;
+}
+
+.program-card .location-tag {
+  color: #9CA3AF;
+}
