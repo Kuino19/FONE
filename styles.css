@@ -545,7 +545,7 @@ img, svg {
 }
 
 .hero-title {
-  font-size: clamp(3.2rem, 7vw, 6.5rem);
+  font-size: clamp(2.5rem, 7vw, 6.5rem);
   line-height: 1.0;
   margin-bottom: 28px;
   font-weight: 900;
@@ -816,7 +816,7 @@ img, svg {
 
 .programs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 30px;
 }
 
@@ -1025,7 +1025,7 @@ img, svg {
 
 .leaders-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 28px;
 }
 

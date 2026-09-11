@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Foursquare National Evangelist (FONE) Application Script
+   Foursquare National Evangelists (FONE) Application Script
    Contains navigation, dynamic schedules, tab switching, and Firestore API
    ========================================================================== */
 
@@ -306,7 +306,7 @@ function initPrayerWall() {
   }
 
   // Try to initialize Firebase
-  if (typeof firebase !== 'undefined' && firebaseConfig && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
+  if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined' && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
     try {
       firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();

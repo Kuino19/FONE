@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Foursquare National Evangelist (FONE) - Testimony Wall Controller
+   Foursquare National Evangelists (FONE) - Testimony Wall Controller
    Dual Database: Firebase Firestore / LocalStorage (demo fallback)
    ========================================================================== */
 
