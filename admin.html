@@ -311,7 +311,7 @@
         row.innerHTML = `
           <td>${dateStr}</td>
           <td><div class="admin-cell-name">${escapeHTML(prayer.name || 'Anonymous')}</div></td>
-          <td><div class="admin-cell-email">${escapeHTML(prayer.email || '�')}</div></td>
+          <td><div class="admin-cell-email">${escapeHTML(prayer.email || '-')}</div></td>
           <td><span class="prayer-category-badge badge-${escapeHTML(prayer.category || 'General')}">${escapeHTML(prayer.category || 'General')}</span></td>
           <td>
             <div class="admin-cell-text" onclick="toggleTextExpand(this)" style="cursor:pointer;" title="Click to expand">

@@ -495,7 +495,7 @@ function initVerseOfTheDay() {
 
   const selected = fallbackVerses[dayOfYear % fallbackVerses.length];
   textEl.textContent = `"${selected.text}"`;
-  refEl.textContent = `— ${selected.ref}`;
+  refEl.textContent = `- ${selected.ref}`;
 
   // Attempt live API fetch for dynamic daily verse
   fetch('https://labs.bible.org/api/?passage=votd&type=json')
@@ -504,7 +504,7 @@ function initVerseOfTheDay() {
       if (data && data[0]) {
         const item = data[0];
         textEl.textContent = `"${item.text.trim()}"`;
-        refEl.textContent = `— ${item.bookname} ${item.chapter}:${item.verse}`;
+        refEl.textContent = `- ${item.bookname} ${item.chapter}:${item.verse}`;
       }
     })
     .catch(() => {
