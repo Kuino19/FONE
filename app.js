@@ -313,6 +313,7 @@ function renderFeed() {
     if (filterVal !== 'All' && p.category !== filterVal) return false;
     if (searchVal && (!p.text || !p.text.toLowerCase().includes(searchVal))) return false;
     if (p.isPublic === false) return false;
+    if (p.isApproved === false) return false;
     return true;
   });
 
@@ -460,4 +461,53 @@ function formatTimeAgo(date) {
   if (hours < 24) return hours + 'h ago';
   const days = Math.floor(hours / 24);
   return days + 'd ago';
+}
+
+/* ==========================================================================
+   Verse of the Day Feature
+   ========================================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+  initVerseOfTheDay();
+});
+
+function initVerseOfTheDay() {
+  const textEl = document.getElementById('votd-text');
+  const refEl = document.getElementById('votd-ref');
+  if (!textEl || !refEl) return;
+
+  const fallbackVerses = [
+    { text: "For I am not ashamed of the gospel of Christ: for it is the power of God unto salvation to every one that believeth.", ref: "Romans 1:16" },
+    { text: "And he said unto them, Go ye into all the world, and preach the gospel to every creature.", ref: "Mark 16:15" },
+    { text: "If my people, which are called by my name, shall humble themselves, and pray, and seek my face, and turn from their wicked ways; then will I hear from heaven.", ref: "2 Chronicles 7:14" },
+    { text: "Go ye therefore, and teach all nations, baptizing them in the name of the Father, and of the Son, and of the Holy Ghost.", ref: "Matthew 28:19" },
+    { text: "Call unto me, and I will answer thee, and show thee great and mighty things, which thou knowest not.", ref: "Jeremiah 33:3" },
+    { text: "But ye shall receive power, after that the Holy Ghost is come upon you: and ye shall be witnesses unto me both in Jerusalem, and in all Judaea, and in Samaria, and unto the uttermost part of the earth.", ref: "Acts 1:8" },
+    { text: "The effectual fervent prayer of a righteous man availeth much.", ref: "James 5:16" },
+    { text: "Also I heard the voice of the Lord, saying, Whom shall I send, and who will go for us? Then said I, Here am I; send me.", ref: "Isaiah 6:8" }
+  ];
+
+  // Rotate based on current day of year
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  const oneDay = 1000 * 60 * 60 * 24;
+  const dayOfYear = Math.floor(diff / oneDay);
+
+  const selected = fallbackVerses[dayOfYear % fallbackVerses.length];
+  textEl.textContent = `"${selected.text}"`;
+  refEl.textContent = `— ${selected.ref}`;
+
+  // Attempt live API fetch for dynamic daily verse
+  fetch('https://labs.bible.org/api/?passage=votd&type=json')
+    .then(r => r.json())
+    .then(data => {
+      if (data && data[0]) {
+        const item = data[0];
+        textEl.textContent = `"${item.text.trim()}"`;
+        refEl.textContent = `— ${item.bookname} ${item.chapter}:${item.verse}`;
+      }
+    })
+    .catch(() => {
+      // Keep fallback
+    });
 }

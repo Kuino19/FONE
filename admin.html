@@ -226,38 +226,18 @@
       });
     }
 
-    /* ==========================================================================
-       2. Dashboard Moderation Logic (Firebase / LocalStorage)
+        /* ==========================================================================
+       2. Dashboard Moderation Logic (Turso Database via Vercel API)
        ========================================================================== */
-    let isFirebase = false;
-    let db = null;
     let rawPrayers = [];
     let currentFilter = 'all';
 
     function initAdminPanel() {
       const badge = document.getElementById('backend-status-badge');
-
-      // Firebase Check
-      if (typeof firebase !== 'undefined' && firebaseConfig && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
-        try {
-          firebase.initializeApp(firebaseConfig);
-          db = firebase.firestore();
-          isFirebase = true;
-          badge.textContent = "Firebase Mode";
-          badge.style.backgroundColor = "rgba(76, 175, 80, 0.15)";
-          badge.style.color = "var(--accent-green)";
-          badge.style.border = "1px solid rgba(76, 175, 80, 0.3)";
-        } catch (e) {
-          isFirebase = false;
-        }
-      }
-
-      if (!isFirebase) {
-        badge.textContent = "Demo (LocalStorage)";
-        badge.style.backgroundColor = "rgba(255, 193, 7, 0.1)";
-        badge.style.color = "var(--accent-gold)";
-        badge.style.border = "1px solid rgba(255, 193, 7, 0.2)";
-      }
+      badge.textContent = "Turso DB Active";
+      badge.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+      badge.style.color = "#10B981";
+      badge.style.border = "1px solid rgba(16, 185, 129, 0.2)";
 
       // Filter Button Event Listeners
       const filterBtns = document.querySelectorAll('.admin-filter-btn');
@@ -273,57 +253,24 @@
       loadAdminData();
     }
 
-    function loadAdminData() {
+    async function loadAdminData() {
       const loaderRow = document.getElementById('admin-loader-row');
+      if (loaderRow) loaderRow.classList.remove('id-hidden');
 
-      if (isFirebase) {
-        // Stream all prayers (no matter if public, private, hidden)
-        db.collection('prayers')
-          .orderBy('createdAt', 'desc')
-          .onSnapshot(snapshot => {
-            loaderRow.classList.add('id-hidden');
-            rawPrayers = [];
-            
-            snapshot.forEach(doc => {
-              const data = doc.data();
-              const date = data.createdAt ? data.createdAt.toDate() : new Date();
-              rawPrayers.push({
-                id: doc.id,
-                ...data,
-                createdAt: date
-              });
-            });
-
-            renderAdminTable();
-            updateStats();
-          }, error => {
-            console.error("Firebase admin load failed, falling back:", error);
-            loadLocalStorageData();
-          });
-      } else {
-        loadLocalStorageData();
-      }
-    }
-
-    function loadLocalStorageData() {
-      const loaderRow = document.getElementById('admin-loader-row');
-      loaderRow.classList.add('id-hidden');
-
-      let stored = localStorage.getItem('fone_prayers');
-      if (stored) {
-        try {
-          rawPrayers = JSON.parse(stored).map(p => ({
-            ...p,
-            createdAt: new Date(p.createdAt)
-          }));
-        } catch (e) {
-          rawPrayers = [];
-        }
-      } else {
+      try {
+        const res = await fetch('/api/prayers');
+        if (!res.ok) throw new Error('API Error');
+        const data = await res.json();
+        rawPrayers = data.map(p => ({
+          ...p,
+          createdAt: p.createdAt ? new Date(p.createdAt) : new Date()
+        }));
+      } catch (err) {
+        console.error("Failed to load prayers from Turso API:", err);
         rawPrayers = [];
       }
 
-      rawPrayers.sort((a, b) => b.createdAt - a.createdAt);
+      if (loaderRow) loaderRow.classList.add('id-hidden');
       renderAdminTable();
       updateStats();
     }
@@ -332,11 +279,9 @@
       const tbody = document.getElementById('admin-table-body');
       const emptyRow = document.getElementById('admin-empty-row');
       
-      // Clean table rows except loader and empty row
       const existingRows = tbody.querySelectorAll('tr:not(#admin-loader-row):not(#admin-empty-row)');
       existingRows.forEach(r => r.remove());
 
-      // Filter prayers
       const filtered = rawPrayers.filter(p => {
         if (currentFilter === 'all') return true;
         if (currentFilter === 'public-approved') return p.isPublic === true && p.isApproved === true;
@@ -356,7 +301,9 @@
         const row = document.createElement('tr');
         row.setAttribute('data-row-id', prayer.id);
 
-        const dateStr = prayer.createdAt.toLocaleString(undefined, { 
+        let d = prayer.createdAt;
+        if (isNaN(d)) d = new Date();
+        const dateStr = d.toLocaleString(undefined, { 
           month: 'short', day: 'numeric', year: '2-digit', hour: '2-digit', minute: '2-digit' 
         });
 
@@ -371,11 +318,11 @@
         row.innerHTML = `
           <td>${dateStr}</td>
           <td><div class="admin-cell-name">${escapeHTML(prayer.name || 'Anonymous')}</div></td>
-          <td><div class="admin-cell-email">${escapeHTML(prayer.email || '—')}</div></td>
-          <td><span class="prayer-category-badge badge-${prayer.category}">${prayer.category}</span></td>
+          <td><div class="admin-cell-email">${escapeHTML(prayer.email || '�')}</div></td>
+          <td><span class="prayer-category-badge badge-${escapeHTML(prayer.category || 'General')}">${escapeHTML(prayer.category || 'General')}</span></td>
           <td>
             <div class="admin-cell-text" onclick="toggleTextExpand(this)" style="cursor:pointer;" title="Click to expand">
-              ${escapeHTML(prayer.text)}
+              ${escapeHTML(prayer.text || '')}
             </div>
           </td>
           <td>
@@ -424,49 +371,42 @@
       el.classList.toggle('expanded');
     };
 
-    window.toggleApproval = function(id, approveState) {
-      if (isFirebase) {
-        db.collection('prayers').doc(id).update({
-          isApproved: approveState
-        })
-        .catch(err => {
-          console.error("Firebase update approval error:", err);
-          alert("Error updating record.");
+    window.toggleApproval = async function(id, approveState) {
+      const prayer = rawPrayers.find(p => p.id === id);
+      if (prayer) prayer.isApproved = approveState;
+      renderAdminTable();
+      updateStats();
+
+      try {
+        await fetch('/api/prayers', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, isApproved: approveState })
         });
-      } else {
-        let stored = localStorage.getItem('fone_prayers');
-        if (stored) {
-          let prayers = JSON.parse(stored);
-          let idx = prayers.findIndex(p => p.id === id);
-          if (idx !== -1) {
-            prayers[idx].isApproved = approveState;
-            localStorage.setItem('fone_prayers', JSON.stringify(prayers));
-            loadLocalStorageData();
-          }
-        }
+      } catch (err) {
+        console.error("Error updating approval:", err);
+        alert("Error updating status on server.");
+        loadAdminData();
       }
     };
 
-    window.deletePrayer = function(id) {
+    window.deletePrayer = async function(id) {
       if (!confirm("Are you sure you want to permanently delete this prayer request? This action cannot be undone.")) return;
 
-      if (isFirebase) {
-        db.collection('prayers').doc(id).delete()
-        .catch(err => {
-          console.error("Firebase delete error:", err);
-          alert("Error deleting record.");
+      rawPrayers = rawPrayers.filter(p => p.id !== id);
+      renderAdminTable();
+      updateStats();
+
+      try {
+        await fetch('/api/prayers', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
         });
-      } else {
-        let stored = localStorage.getItem('fone_prayers');
-        if (stored) {
-          let prayers = JSON.parse(stored);
-          let idx = prayers.findIndex(p => p.id === id);
-          if (idx !== -1) {
-            prayers.splice(idx, 1);
-            localStorage.setItem('fone_prayers', JSON.stringify(prayers));
-            loadLocalStorageData();
-          }
-        }
+      } catch (err) {
+        console.error("Error deleting prayer:", err);
+        alert("Error deleting record on server.");
+        loadAdminData();
       }
     };
 
@@ -476,6 +416,7 @@
         tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
       );
     }
+
   </script>
 </body>
 </html>
