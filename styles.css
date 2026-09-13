@@ -2194,3 +2194,226 @@ img, svg {
 .program-card .location-tag {
   color: #9CA3AF;
 }
+
+/* ==========================================================================
+   MINIMAL REDESIGN OVERRIDES
+   ========================================================================== */
+
+:root {
+  --bg-deep: #FFFFFF;
+  --bg-dark: #F9FAFB;
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --accent-gold: #000000;
+  --card-border: 1px solid #E5E7EB;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+body {
+  background-color: #FFFFFF;
+  color: #111827;
+}
+
+/* Typography & Layout Spacing */
+.section-container {
+  padding: 120px 24px;
+}
+
+.section-title {
+  color: #111827;
+}
+
+.section-desc {
+  color: #4B5563;
+}
+
+/* Hero Section */
+.hero-section {
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  color: #111827 !important;
+}
+
+.hero-content-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.hero-badge {
+  background: #F3F4F6 !important;
+  color: #111827 !important;
+  border: 1px solid #E5E7EB !important;
+}
+
+.hero-title {
+  color: #111827 !important;
+}
+
+.hero-desc {
+  color: #4B5563 !important;
+}
+
+.btn-primary {
+  background: #111827 !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.btn-primary:hover {
+  background: #374151 !important;
+}
+
+.btn-secondary {
+  background: #FFFFFF !important;
+  color: #111827 !important;
+  border: 1px solid #E5E7EB !important;
+}
+.btn-secondary:hover {
+  background: #F9FAFB !important;
+}
+
+/* History Section */
+.history-section {
+  background-color: #F9FAFB !important;
+}
+.timeline-content {
+  background: #FFFFFF !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+  color: #111827 !important;
+}
+.timeline-title { color: #111827 !important; }
+.timeline-text { color: #4B5563 !important; }
+.timeline-line { background: #E5E7EB !important; }
+.timeline-dot { border-color: #E5E7EB !important; background: #FFFFFF !important; }
+.timeline-item:hover .timeline-dot { border-color: #111827 !important; background: #111827 !important; }
+
+/* Programs Section */
+.programs-section {
+  background-color: #FFFFFF !important;
+}
+.program-card {
+  background: #FFFFFF !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important;
+  border-left: 4px solid #111827 !important;
+  padding: 40px 30px !important;
+}
+.program-card.monthly { border-left-color: #374151 !important; }
+.program-card.weekly { border-left-color: #111827 !important; }
+.program-card.quarterly { border-left-color: #6B7280 !important; }
+.program-card .program-name { color: #111827 !important; }
+.program-card .program-time, .program-card .program-details, .program-card .location-tag { color: #4B5563 !important; }
+
+/* Leadership Section */
+.leadership-section {
+  background-color: #F9FAFB !important;
+}
+.leader-card, .board-go-banner {
+  background: #FFFFFF !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+.leader-name { color: #111827 !important; }
+.leader-role { color: #6B7280 !important; }
+.leader-desc { color: #4B5563 !important; }
+.board-go-banner h3 { color: #111827 !important; }
+.board-go-banner p { color: #4B5563 !important; }
+
+/* Prayer Wall Section */
+.prayer-section {
+  background-color: #FFFFFF !important;
+}
+.prayer-form-panel {
+  background: #FFFFFF !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important;
+}
+.prayer-form-panel h3 { color: #111827 !important; }
+.prayer-form-panel p, .scripture-quote { color: #4B5563 !important; }
+
+.form-input {
+  border-bottom: 1px solid #E5E7EB !important;
+  color: #111827 !important;
+}
+.form-input:focus {
+  border-bottom-color: #111827 !important;
+}
+
+.cat-pill {
+  border: 1px solid #E5E7EB !important;
+  color: #4B5563 !important;
+}
+.cat-pill.selected {
+  background-color: #111827 !important;
+  color: #FFFFFF !important;
+  border-color: #111827 !important;
+}
+
+.prayer-card {
+  background: #FFFFFF !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+.prayer-user-name { color: #111827 !important; }
+.prayer-card-text { color: #4B5563 !important; }
+.btn-pray { color: #6B7280 !important; border: 1px solid #E5E7EB !important; background: transparent !important; }
+.btn-pray.active { color: #111827 !important; border-color: #111827 !important; }
+
+/* Countdown Timer Minimalist Fix */
+.countdown-banner {
+  background: transparent !important;
+  border: none !important;
+}
+.countdown-heading { color: #6B7280 !important; }
+.countdown-event-name { color: #111827 !important; }
+.time-block span:first-child { color: #111827 !important; }
+.time-block .time-lbl { color: #6B7280 !important; }
+.time-separator { color: #D1D5DB !important; }
+
+/* Remove extra borders from nav */
+.navbar {
+  border-bottom: 1px solid #F3F4F6 !important;
+}
+.navbar.scrolled {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+}
+
+
+/* Testimony Card Minimal Fix */
+.testimony-card {
+  background: #FFFFFF !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+  color: #111827 !important;
+}
+.testimony-card-header .testimony-user-name { color: #111827 !important; }
+.testimony-card-header .testimony-time { color: #6B7280 !important; }
+.testimony-text { color: #4B5563 !important; }
+.testimony-category-badge {
+  background-color: #F3F4F6 !important;
+  color: #4B5563 !important;
+  border: 1px solid #E5E7EB !important;
+}
+.btn-amen {
+  color: #6B7280 !important;
+  background: transparent !important;
+  border: 1px solid #E5E7EB !important;
+}
+.btn-amen.active {
+  color: #111827 !important;
+  border-color: #111827 !important;
+}
+
+/* Grids Whitespace Enhancement */
+.programs-grid { gap: 40px !important; }
+.leaders-grid { gap: 40px !important; }
+.prayer-grid { gap: 50px !important; }
+.testimony-feed { gap: 30px !important; }
+
+/* Increase Hero Whitespace */
+.hero-content-wrapper {
+  margin-bottom: 80px !important;
+}
