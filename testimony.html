@@ -30,15 +30,16 @@
 
     /* Hero banner */
     .testimony-hero {
-      min-height: 52vh;
-      padding-top: 130px;
+      min-height: 45vh;
+      padding-top: 140px;
       padding-bottom: 60px;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(ellipse at 30% 40%, rgba(247, 106, 12, 0.2) 0%, transparent 65%),
-                  linear-gradient(160deg, #CF5300 0%, #D4590A 30%, #E07010 60%, #3D1A00 100%);
+      background: #FFFFFF;
+      color: #111827;
+      border-bottom: 1px solid #E5E7EB;
       overflow: hidden;
     }
     .testimony-hero-inner {
@@ -57,13 +58,12 @@
       margin-top: 36px;
     }
     .testimony-stat-pill {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 50px;
-      padding: 14px 28px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: var(--border-radius-md);
+      padding: 16px 28px;
       text-align: center;
-      min-width: 160px;
+      min-width: 140px;
     }
     .testimony-stat-pill .num {
       font-size: 1.8rem;
@@ -608,13 +608,6 @@
       </div>
     </div>
   </footer>
-
-  <!-- Firebase Compat Libraries -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-  <!-- App scripts -->
-  <script src="firebase-config.js"></script>
   <script src="app.js"></script>
   <script src="testimony.js"></script>
 
