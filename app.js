@@ -257,199 +257,80 @@ function initCountdown() {
 }
 
 /* ==========================================================================
-   4. Prayer Wall Controller (Dual Database: Firebase / LocalStorage)
+   4. Prayer Wall Controller (Turso via Vercel API)
    ========================================================================== */
-let isFirebaseActive = false;
-let db = null;
-let prayersCache = []; // Local cache of items for search/filtering
-
-// Sample data to initialize local DB if Firebase isn't present
-const samplePrayers = [
-  {
-    id: "sample-1",
-    name: "Sister Esther",
-    category: "Healing",
-    text: "Please pray for my mother who was diagnosed with a severe kidney issue. We believe in the healing stripe of Jesus Christ for absolute restoration. Amen.",
-    isApproved: true,
-    prayerCount: 14,
-    createdAt: new Date(Date.now() - 4 * 3600 * 1000) // 4 hours ago
-  },
-  {
-    id: "sample-2",
-    name: "Anonymous",
-    category: "Deliverance",
-    text: "I am asking for prayers to break free from stagnation in my career and spiritual life. Let the fire of the Holy Spirit clear every roadblock.",
-    isApproved: true,
-    prayerCount: 29,
-    createdAt: new Date(Date.now() - 24 * 3600 * 1000) // 1 day ago
-  },
-  {
-    id: "sample-3",
-    name: "Brother David O.",
-    category: "Mothers",
-    text: "Standing in agreement with my wife for the fruit of the womb. We trust God that by this time next year, our Joyful Mother testimony will manifest.",
-    isApproved: true,
-    prayerCount: 22,
-    createdAt: new Date(Date.now() - 48 * 3600 * 1000) // 2 days ago
-  }
-];
+let prayersCache = [];
 
 function initPrayerWall() {
-  // Setup event listeners
   const form = document.getElementById('prayer-form');
-  const searchInput = document.getElementById('wall-search');
-  const filterSelect = document.getElementById('wall-filter');
-
-  // Safety Guard: Exit if prayer wall elements are missing on this page
-  if (!form) {
-    return;
-  }
-
-  // Try to initialize Firebase
-  if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined' && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
-    try {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      isFirebaseActive = true;
-      console.log("FONE Website: Connected successfully to Firebase Firestore.");
-    } catch (error) {
-      console.error("Firebase init failed, switching to LocalStorage mode.", error);
-      isFirebaseActive = false;
-    }
-  } else {
-    console.log("Firebase not configured. Running in client-side LocalStorage mode.");
-    isFirebaseActive = false;
-  }
+  const filterSelect = document.getElementById('category-filter');
+  const searchInput = document.getElementById('search-prayers');
+  if (!form) return;
 
   if (searchInput) searchInput.addEventListener('input', handleFilterChange);
   if (filterSelect) filterSelect.addEventListener('change', handleFilterChange);
   form.addEventListener('submit', handleFormSubmit);
 
-  // Load Feed
   loadPrayerFeed();
 }
 
-// Fetch and stream prayer requests
-function loadPrayerFeed() {
-  const loader = document.getElementById('wall-loader');
-  const emptyState = document.getElementById('wall-empty-state');
-  const feedContainer = document.getElementById('prayer-feed');
+async function loadPrayerFeed() {
+  const loader = document.getElementById('prayer-loader');
+  const feed = document.getElementById('prayer-feed');
+  if (!loader || !feed) return;
 
-  if (isFirebaseActive) {
-    // Live stream approved prayers sorted by createdAt descending
-    db.collection('prayers')
-      .where('isApproved', '==', true)
-      .orderBy('createdAt', 'desc')
-      .onSnapshot((snapshot) => {
-        loader.classList.add('id-hidden');
-        prayersCache = [];
-        
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          // Convert firestore timestamp to JS Date
-          const date = data.createdAt ? data.createdAt.toDate() : new Date();
-          prayersCache.push({
-            id: doc.id,
-            ...data,
-            createdAt: date
-          });
-        });
+  loader.classList.remove('d-none');
+  feed.innerHTML = '';
 
-        renderFeed();
-        updateStats();
-      }, (error) => {
-        console.error("Error fetching live prayers:", error);
-        fallbackToLocal();
-      });
-  } else {
-    // LocalStorage Mode
-    fallbackToLocal();
+  try {
+    const res = await fetch('/api/prayers');
+    if (!res.ok) throw new Error('API Error');
+    prayersCache = await res.json();
+  } catch (err) {
+    console.error('Failed to fetch from Turso API', err);
   }
 
-  function fallbackToLocal() {
-    loader.classList.add('id-hidden');
-    
-    // Load local storage
-    let stored = localStorage.getItem('fone_prayers');
-    if (!stored) {
-      // Populate with samples
-      localStorage.setItem('fone_prayers', JSON.stringify(samplePrayers));
-      prayersCache = [...samplePrayers];
-    } else {
-      try {
-        prayersCache = JSON.parse(stored).map(p => ({
-          ...p,
-          createdAt: new Date(p.createdAt)
-        }));
-      } catch (e) {
-        prayersCache = [...samplePrayers];
-      }
-    }
-    
-    // Sort descending
-    prayersCache.sort((a, b) => b.createdAt - a.createdAt);
-    
-    renderFeed();
-    updateStats();
-  }
+  loader.classList.add('d-none');
+  renderFeed();
 }
 
-// Render dynamic elements to DOM
+function handleFilterChange() {
+  renderFeed();
+}
+
 function renderFeed() {
-  const feedContainer = document.getElementById('prayer-feed');
-  const emptyState = document.getElementById('wall-empty-state');
-  const activeCountEl = document.getElementById('active-wall-count');
+  const feed = document.getElementById('prayer-feed');
+  const filterSelect = document.getElementById('category-filter');
+  const searchInput = document.getElementById('search-prayers');
+  if (!feed) return;
 
-  // Safety Guard: Exit if prayer feed elements are missing on this page
-  if (!feedContainer || !emptyState || !activeCountEl) {
-    return;
-  }
+  feed.innerHTML = '';
   
-  const searchInput = document.getElementById('wall-search');
-  const filterSelect = document.getElementById('wall-filter');
-  const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
   const filterVal = filterSelect ? filterSelect.value : 'All';
+  const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
 
-  // Remove existing cards (leaving loader and emptyState hidden elements)
-  const cards = feedContainer.querySelectorAll('.prayer-card');
-  cards.forEach(card => card.remove());
-
-  // Apply Filters
-  const filtered = prayersCache.filter(p => {
-    // Approved check (only relevant if local)
-    if (p.isApproved !== true) return false;
-    
-    // Category match
-    const categoryMatches = (filterVal === 'All' || p.category === filterVal);
-    
-    // Search match
-    const searchMatches = !searchVal || 
-      p.text.toLowerCase().includes(searchVal) || 
-      p.name.toLowerCase().includes(searchVal);
-      
-    return categoryMatches && searchMatches;
+  let filtered = prayersCache.filter(p => {
+    if (filterVal !== 'All' && p.category !== filterVal) return false;
+    if (searchVal && (!p.text || !p.text.toLowerCase().includes(searchVal))) return false;
+    if (p.isPublic === false) return false;
+    return true;
   });
 
-  activeCountEl.textContent = `Showing ${filtered.length} prayer request${filtered.length === 1 ? '' : 's'}`;
-
   if (filtered.length === 0) {
-    emptyState.classList.remove('id-hidden');
+    feed.innerHTML = '<div class="empty-state">No prayer requests found. Be the first to share one.</div>';
     return;
   }
 
-  emptyState.classList.add('id-hidden');
-
-  // Insert cards
   filtered.forEach(prayer => {
     const card = document.createElement('div');
-    card.className = 'prayer-card glass-panel';
+    card.className = 'prayer-card';
     card.setAttribute('data-id', prayer.id);
+    
+    let d = new Date(prayer.createdAt);
+    if (isNaN(d)) d = new Date();
+    const timeAgo = formatTimeAgo(d);
 
-    // Format relative time
-    const timeAgo = formatTimeAgo(prayer.createdAt);
-
-    // Check if user has already clicked "Prayed" in this browser session
-    const hasPrayed = localStorage.getItem(`prayed_${prayer.id}`) === 'true';
+    const hasPrayed = localStorage.getItem('prayed_' + prayer.id) === 'true';
 
     card.innerHTML = `
       <div class="prayer-card-header">
@@ -457,245 +338,126 @@ function renderFeed() {
           <span class="prayer-user-name">${escapeHTML(prayer.name || "Anonymous")}</span>
           <span class="prayer-time-stamp">${timeAgo}</span>
         </div>
-        <span class="prayer-category-badge badge-${prayer.category}">${prayer.category}</span>
+        <span class="prayer-category-badge badge-${escapeHTML(prayer.category || 'general')}">${escapeHTML(prayer.category || 'General')}</span>
       </div>
-      <div class="prayer-card-text">${escapeHTML(prayer.text)}</div>
-      <div class="prayer-card-actions">
+      <div class="prayer-card-text">${escapeHTML(prayer.text || '')}</div>
+      <div class="prayer-card-footer">
         <button class="btn-pray ${hasPrayed ? 'active' : ''}" onclick="handlePrayClick('${prayer.id}')">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-          <span class="btn-pray-text">${hasPrayed ? 'Prayed!' : 'I Prayed for This'}</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="${hasPrayed ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          <span class="pray-count">${prayer.prayerCount || 0}</span> Praying
         </button>
-        <span class="prayed-multiplier">
-          <span class="multiplier-dot"></span>
-          <span class="pray-count-text">${prayer.prayerCount || 0} times prayed</span>
-        </span>
       </div>
     `;
-    
-    feedContainer.appendChild(card);
+    feed.appendChild(card);
   });
 }
 
-// Update counters in Hero stats
-function updateStats() {
-  const totalPrayersEl = document.getElementById('hero-total-prayers');
-  const totalPrayedEl = document.getElementById('hero-total-prayed-for');
-
-  // Safety Guard: Exit if stats indicators are missing on this page
-  if (!totalPrayersEl || !totalPrayedEl) {
-    return;
-  }
-
-  const totalSubmitted = prayersCache.length;
-  const totalPrayedCount = prayersCache.reduce((acc, curr) => acc + (curr.prayerCount || 0), 0);
-
-  // Animate count up if numbers change
-  animateNumber(totalPrayersEl, parseInt(totalPrayersEl.textContent) || 0, totalSubmitted, 800);
-  animateNumber(totalPrayedEl, parseInt(totalPrayedEl.textContent) || 0, totalPrayedCount, 800);
-}
-
-// Handle request submission
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
   e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const ogText = btn.innerHTML;
+  btn.innerHTML = 'Submitting...';
+  btn.disabled = true;
 
-  const nameInput = document.getElementById('form-name');
-  const emailInput = document.getElementById('form-email');
-  const categorySelect = document.getElementById('form-category');
-  const textInput = document.getElementById('form-text');
-  const publicCheckbox = document.getElementById('form-public');
-  const submitBtn = document.getElementById('btn-submit-request');
-  const successBox = document.getElementById('form-success-box');
-
-  const nameVal = nameInput.value.trim() || 'Anonymous';
-  const emailVal = emailInput.value.trim() || '';
-  const categoryVal = categorySelect.value;
-  const textVal = textInput.value.trim();
-  const isPublicVal = publicCheckbox.checked;
-
-  if (!textVal) return;
-
-  // Set loading state
-  submitBtn.disabled = true;
-  submitBtn.querySelector('span').textContent = 'Submitting...';
+  const categoryInput = document.getElementById('form-category');
+  const nameInput = document.getElementById('prayer-name');
+  const textInput = document.getElementById('prayer-text');
+  const visibilitySelect = document.getElementById('prayer-visibility');
 
   const newPrayer = {
-    name: nameVal,
-    email: emailVal,
-    category: categoryVal,
-    text: textVal,
-    isApproved: true, // Auto-approve by default, can hide via admin
-    prayerCount: 0
+    id: 'fone-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+    name: nameInput.value.trim() || 'Anonymous',
+    category: categoryInput ? categoryInput.value : 'General',
+    text: textInput.value.trim(),
+    isPublic: visibilitySelect ? (visibilitySelect.value === 'public') : true
   };
 
-  if (isFirebaseActive) {
-    db.collection('prayers').add({
-      ...newPrayer,
-      isPublic: isPublicVal,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    })
-    .then(() => {
-      onSubmissionSuccess();
-    })
-    .catch((error) => {
-      console.error("Firebase submit error:", error);
-      submitBtn.disabled = false;
-      submitBtn.querySelector('span').textContent = 'Submit Request';
-      alert("Error submitting request. Please try again.");
+  try {
+    await fetch('/api/prayers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newPrayer)
     });
-  } else {
-    // LocalStorage submission
-    const localPrayer = {
-      id: 'local-' + Date.now() + Math.random().toString(36).substr(2, 5),
-      ...newPrayer,
-      isPublic: isPublicVal,
-      createdAt: new Date()
-    };
-
-    let stored = localStorage.getItem('fone_prayers');
-    let prayers = [];
-    if (stored) {
-      try { prayers = JSON.parse(stored); } catch(e) {}
-    }
-    prayers.push(localPrayer);
-    localStorage.setItem('fone_prayers', JSON.stringify(prayers));
-
-    // Re-trigger load and render
-    setTimeout(() => {
-      onSubmissionSuccess();
-      loadPrayerFeed();
-    }, 600); // Small delay for premium feel
+    
+    newPrayer.createdAt = new Date().toISOString();
+    newPrayer.prayerCount = 0;
+    prayersCache.unshift(newPrayer);
+    
+    e.target.reset();
+    if(categoryInput) categoryInput.value = 'General';
+    document.querySelectorAll('#prayer-cat-pills .cat-pill').forEach(p => p.classList.remove('selected'));
+    const firstPill = document.querySelector('#prayer-cat-pills .cat-pill');
+    if(firstPill) firstPill.classList.add('selected');
+    
+    renderFeed();
+  } catch(err) {
+    console.error(err);
+    alert('Error submitting request. Please try again.');
   }
 
-  function onSubmissionSuccess() {
-    // Reset inputs
-    nameInput.value = '';
-    emailInput.value = '';
-    textInput.value = '';
-    categorySelect.selectedIndex = 0;
-    publicCheckbox.checked = true;
-
-    // Reset button
-    submitBtn.disabled = false;
-    submitBtn.querySelector('span').textContent = 'Submit Request';
-
-    // Show custom alert success box
-    successBox.classList.remove('id-hidden');
-    if (!isPublicVal) {
-      document.getElementById('success-msg').textContent = "Your request was submitted privately. Our counseling team will review it, and it will not appear on the public wall.";
-    } else {
-      document.getElementById('success-msg').textContent = "Your request is active. Our network of evangelists is interceding for you.";
-    }
-
-    setTimeout(() => {
-      successBox.classList.add('id-hidden');
-    }, 6000);
-  }
+  btn.innerHTML = ogText;
+  btn.disabled = false;
 }
 
-// Triggered when clicking "I Prayed for This"
-window.handlePrayClick = function(id) {
-  const hasPrayed = localStorage.getItem(`prayed_${id}`) === 'true';
+window.handlePrayClick = async function(id) {
+  const hasPrayed = localStorage.getItem('prayed_' + id) === 'true';
   const button = document.querySelector(`.prayer-card[data-id="${id}"] .btn-pray`);
+  const countSpan = button ? button.querySelector('.pray-count') : null;
+  
+  const prayer = prayersCache.find(p => p.id === id);
+  if (!prayer) return;
 
   if (hasPrayed) {
-    // Undo prayer count locally
-    localStorage.removeItem(`prayed_${id}`);
+    localStorage.removeItem('prayed_' + id);
     if (button) button.classList.remove('active');
+    prayer.prayerCount = Math.max(0, (prayer.prayerCount || 0) - 1);
+    if(countSpan) countSpan.textContent = prayer.prayerCount;
     
-    if (isFirebaseActive) {
-      db.collection('prayers').doc(id).update({
-        prayerCount: firebase.firestore.FieldValue.increment(-1)
-      });
-    } else {
-      let stored = localStorage.getItem('fone_prayers');
-      if (stored) {
-        let prayers = JSON.parse(stored);
-        let idx = prayers.findIndex(p => p.id === id);
-        if (idx !== -1) {
-          prayers[idx].prayerCount = Math.max(0, (prayers[idx].prayerCount || 0) - 1);
-          localStorage.setItem('fone_prayers', JSON.stringify(prayers));
-          loadPrayerFeed();
-        }
-      }
-    }
+    fetch('/api/pray', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, increment: false })
+    }).catch(console.error);
+
   } else {
-    // Add prayer count
-    localStorage.setItem(`prayed_${id}`, 'true');
-    if (button) button.classList.add('active');
-
-    // Simple micro-animation on heart
-    const svg = button.querySelector('svg');
-    svg.style.transform = 'scale(1.4)';
-    setTimeout(() => svg.style.transform = '', 200);
-
-    if (isFirebaseActive) {
-      db.collection('prayers').doc(id).update({
-        prayerCount: firebase.firestore.FieldValue.increment(1)
-      });
-    } else {
-      let stored = localStorage.getItem('fone_prayers');
-      if (stored) {
-        let prayers = JSON.parse(stored);
-        let idx = prayers.findIndex(p => p.id === id);
-        if (idx !== -1) {
-          prayers[idx].prayerCount = (prayers[idx].prayerCount || 0) + 1;
-          localStorage.setItem('fone_prayers', JSON.stringify(prayers));
-          loadPrayerFeed();
-        }
+    localStorage.setItem('prayed_' + id, 'true');
+    if (button) {
+      button.classList.add('active');
+      const svg = button.querySelector('svg');
+      if(svg) {
+        svg.style.transform = 'scale(1.4)';
+        setTimeout(() => svg.style.transform = '', 200);
       }
     }
+    prayer.prayerCount = (prayer.prayerCount || 0) + 1;
+    if(countSpan) countSpan.textContent = prayer.prayerCount;
+    
+    fetch('/api/pray', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, increment: true })
+    }).catch(console.error);
   }
 };
 
-function handleFilterChange() {
-  renderFeed();
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, tag => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[tag]));
 }
 
-/* ==========================================================================
-   5. Helper Utilities
-   ========================================================================== */
 function formatTimeAgo(date) {
+  if (!date) return '';
   const now = new Date();
   const seconds = Math.floor((now - date) / 1000);
-  
   if (seconds < 60) return 'Just now';
-  
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  
+  if (minutes < 60) return minutes + 'm ago';
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  
+  if (hours < 24) return hours + 'h ago';
   const days = Math.floor(hours / 24);
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days}d ago`;
-  
-  // Format standard date
-  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function escapeHTML(str) {
-  return str.replace(/[&<>'"]/g, 
-    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-  );
-}
-
-function animateNumber(element, start, end, duration) {
-  if (start === end) {
-    element.textContent = end;
-    return;
-  }
-  
-  let startTimestamp = null;
-  const step = (timestamp) => {
-    if (!startTimestamp) startTimestamp = timestamp;
-    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-    element.textContent = Math.floor(progress * (end - start) + start);
-    if (progress < 1) {
-      window.requestAnimationFrame(step);
-    } else {
-      element.textContent = end;
-    }
-  };
-  window.requestAnimationFrame(step);
+  return days + 'd ago';
 }
