@@ -11,8 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initTestimonyWall() {
   const form = document.getElementById('testimony-form');
+  const searchInput = document.getElementById('testimony-search');
   if (form) {
     form.addEventListener('submit', handleTestimonySubmit);
+  }
+  if (searchInput) {
+    searchInput.addEventListener('input', renderTestimonies);
   }
   loadTestimonies();
 }
@@ -20,10 +24,11 @@ function initTestimonyWall() {
 async function loadTestimonies() {
   const loader = document.getElementById('testimony-loader');
   const feed = document.getElementById('testimony-feed');
-  if (!loader || !feed) return;
+  const emptyState = document.getElementById('testimony-empty');
+  if (!feed) return;
 
-  loader.style.display = 'block';
-  feed.innerHTML = '';
+  if (loader) loader.classList.remove('id-hidden');
+  if (emptyState) emptyState.classList.add('id-hidden');
 
   try {
     const res = await fetch('/api/testimonies');
@@ -33,22 +38,51 @@ async function loadTestimonies() {
     console.error('Failed to fetch testimonies from Turso', err);
   }
 
-  loader.style.display = 'none';
+  if (loader) loader.classList.add('id-hidden');
+  updateTestimonyStats();
   renderTestimonies();
+}
+
+function updateTestimonyStats() {
+  const heroCount = document.getElementById('hero-testimony-count');
+  const heroAmen = document.getElementById('hero-amen-count');
+
+  if (heroCount) heroCount.textContent = testimoniesCache.length;
+  if (heroAmen) {
+    const totalAmens = testimoniesCache.reduce((sum, t) => sum + (t.amenCount || 0), 0);
+    heroAmen.textContent = totalAmens;
+  }
 }
 
 function renderTestimonies() {
   const feed = document.getElementById('testimony-feed');
+  const searchInput = document.getElementById('testimony-search');
+  const feedCountEl = document.getElementById('testimony-feed-count');
+  const emptyState = document.getElementById('testimony-empty');
   if (!feed) return;
 
-  feed.innerHTML = '';
+  const cards = feed.querySelectorAll('.testimony-card');
+  cards.forEach(c => c.remove());
 
-  if (testimoniesCache.length === 0) {
-    feed.innerHTML = '<div class="empty-state">No testimonies found. Be the first to share one!</div>';
+  const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
+
+  let filtered = testimoniesCache.filter(t => {
+    if (searchVal && (!t.text || !t.text.toLowerCase().includes(searchVal)) && (!t.name || !t.name.toLowerCase().includes(searchVal))) return false;
+    return true;
+  });
+
+  if (feedCountEl) {
+    feedCountEl.textContent = `Showing ${filtered.length} testimon${filtered.length === 1 ? 'y' : 'ies'}`;
+  }
+
+  if (filtered.length === 0) {
+    if (emptyState) emptyState.classList.remove('id-hidden');
     return;
   }
 
-  testimoniesCache.forEach(t => {
+  if (emptyState) emptyState.classList.add('id-hidden');
+
+  filtered.forEach(t => {
     const card = document.createElement('div');
     card.className = 'testimony-card';
     card.id = `test-${t.id}`;
@@ -73,7 +107,7 @@ function renderTestimonies() {
             <div class="testimony-time">${timeAgo}</div>
           </div>
         </div>
-        <div class="testimony-category-badge badge-${escapeHTML(t.category)}">${escapeHTML(t.category)}</div>
+        <div class="testimony-category-badge badge-${escapeHTML(t.category || 'General')}">${escapeHTML(t.category || 'General')}</div>
       </div>
       <div class="testimony-text">
         ${escapeHTML(t.text)}
@@ -92,28 +126,31 @@ function renderTestimonies() {
 
 async function handleTestimonySubmit(e) {
   e.preventDefault();
-  const btn = e.target.querySelector('button[type="submit"]');
-  const ogText = btn.innerHTML;
-  btn.innerHTML = 'Submitting...';
+  const btn = document.getElementById('btn-submit-testimony') || e.target.querySelector('button[type="submit"]');
+  const ogHtml = btn.innerHTML;
+  btn.innerHTML = '<span>Submitting...</span>';
   btn.disabled = true;
 
-  const nameInput = document.getElementById('testimony-name');
-  const categoryInput = document.getElementById('testimony-category');
-  const textInput = document.getElementById('testimony-text');
+  const nameInput = document.getElementById('test-name');
+  const categoryInput = document.getElementById('test-category');
+  const textInput = document.getElementById('test-text');
+  const successBox = document.getElementById('testimony-success-box');
 
   const newTestimony = {
     id: 'test-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-    name: nameInput.value.trim() || 'Anonymous',
-    category: categoryInput.value,
-    text: textInput.value.trim()
+    name: (nameInput && nameInput.value.trim()) || 'Anonymous',
+    category: (categoryInput && categoryInput.value) || 'General',
+    text: textInput ? textInput.value.trim() : ''
   };
 
   try {
-    await fetch('/api/testimonies', {
+    const res = await fetch('/api/testimonies', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newTestimony)
     });
+
+    if (!res.ok) throw new Error('Failed to submit testimony');
     
     newTestimony.createdAt = new Date().toISOString();
     newTestimony.amenCount = 0;
@@ -121,17 +158,23 @@ async function handleTestimonySubmit(e) {
     testimoniesCache.unshift(newTestimony);
     
     e.target.reset();
+    if (successBox) {
+      successBox.classList.remove('id-hidden');
+      setTimeout(() => successBox.classList.add('id-hidden'), 6000);
+    }
+
+    updateTestimonyStats();
     renderTestimonies();
     
-    // Smooth scroll
-    document.getElementById('testimony-feed').scrollIntoView({ behavior: 'smooth' });
+    const feedEl = document.getElementById('testimony-feed');
+    if (feedEl) feedEl.scrollIntoView({ behavior: 'smooth' });
     
   } catch(err) {
     console.error(err);
     alert('Error submitting testimony. Please try again.');
   }
 
-  btn.innerHTML = ogText;
+  btn.innerHTML = ogHtml;
   btn.disabled = false;
 }
 
@@ -151,6 +194,7 @@ window.handleAmenClick = async function(id) {
       btn.innerHTML = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> Say Amen`;
     }
     if (countEl) countEl.textContent = t.amenCount;
+    updateTestimonyStats();
     
     fetch('/api/amen', {
       method: 'POST',
@@ -166,6 +210,7 @@ window.handleAmenClick = async function(id) {
       btn.innerHTML = `<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" stroke="currentColor" stroke-width="2.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> Amen! `;
     }
     if (countEl) countEl.textContent = t.amenCount;
+    updateTestimonyStats();
     
     fetch('/api/amen', {
       method: 'POST',

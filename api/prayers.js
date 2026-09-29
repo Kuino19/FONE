@@ -17,10 +17,10 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'POST') {
     try {
-      const { id, name, category, text, isPublic } = req.body;
+      const { id, name, email, category, text, isPublic } = req.body;
       await executeQuery(
-        'INSERT INTO prayers (id, name, category, text, isPublic, isApproved, prayerCount) VALUES (?, ?, ?, ?, ?, 1, 0)',
-        [id, name, category, text, isPublic ? 1 : 0]
+        'INSERT INTO prayers (id, name, email, category, text, isPublic, isApproved, prayerCount) VALUES (?, ?, ?, ?, ?, ?, 1, 0)',
+        [id, name || 'Anonymous', email || '', category || 'General', text || '', isPublic ? 1 : 0]
       );
       res.status(200).json({ success: true });
     } catch (error) {

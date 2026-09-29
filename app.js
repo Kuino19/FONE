@@ -263,8 +263,8 @@ let prayersCache = [];
 
 function initPrayerWall() {
   const form = document.getElementById('prayer-form');
-  const filterSelect = document.getElementById('category-filter');
-  const searchInput = document.getElementById('search-prayers');
+  const filterSelect = document.getElementById('wall-filter');
+  const searchInput = document.getElementById('wall-search');
   if (!form) return;
 
   if (searchInput) searchInput.addEventListener('input', handleFilterChange);
@@ -275,12 +275,13 @@ function initPrayerWall() {
 }
 
 async function loadPrayerFeed() {
-  const loader = document.getElementById('prayer-loader');
+  const loader = document.getElementById('wall-loader');
   const feed = document.getElementById('prayer-feed');
-  if (!loader || !feed) return;
+  const emptyState = document.getElementById('wall-empty-state');
+  if (!feed) return;
 
-  loader.classList.remove('d-none');
-  feed.innerHTML = '';
+  if (loader) loader.classList.remove('id-hidden');
+  if (emptyState) emptyState.classList.add('id-hidden');
 
   try {
     const res = await fetch('/api/prayers');
@@ -290,8 +291,20 @@ async function loadPrayerFeed() {
     console.error('Failed to fetch from Turso API', err);
   }
 
-  loader.classList.add('d-none');
+  if (loader) loader.classList.add('id-hidden');
+  updatePrayerStats();
   renderFeed();
+}
+
+function updatePrayerStats() {
+  const heroTotal = document.getElementById('hero-total-prayers');
+  const heroPrayedFor = document.getElementById('hero-total-prayed-for');
+  
+  if (heroTotal) heroTotal.textContent = prayersCache.length;
+  if (heroPrayedFor) {
+    const totalCount = prayersCache.reduce((sum, p) => sum + (p.prayerCount || 0), 0);
+    heroPrayedFor.textContent = totalCount;
+  }
 }
 
 function handleFilterChange() {
@@ -300,27 +313,36 @@ function handleFilterChange() {
 
 function renderFeed() {
   const feed = document.getElementById('prayer-feed');
-  const filterSelect = document.getElementById('category-filter');
-  const searchInput = document.getElementById('search-prayers');
+  const filterSelect = document.getElementById('wall-filter');
+  const searchInput = document.getElementById('wall-search');
+  const activeCountEl = document.getElementById('active-wall-count');
+  const emptyState = document.getElementById('wall-empty-state');
   if (!feed) return;
 
-  feed.innerHTML = '';
+  const cards = feed.querySelectorAll('.prayer-card');
+  cards.forEach(c => c.remove());
   
   const filterVal = filterSelect ? filterSelect.value : 'All';
   const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
 
   let filtered = prayersCache.filter(p => {
     if (filterVal !== 'All' && p.category !== filterVal) return false;
-    if (searchVal && (!p.text || !p.text.toLowerCase().includes(searchVal))) return false;
+    if (searchVal && (!p.text || !p.text.toLowerCase().includes(searchVal)) && (!p.name || !p.name.toLowerCase().includes(searchVal))) return false;
     if (p.isPublic === false) return false;
     if (p.isApproved === false) return false;
     return true;
   });
 
+  if (activeCountEl) {
+    activeCountEl.textContent = `Showing ${filtered.length} prayer request${filtered.length === 1 ? '' : 's'}`;
+  }
+
   if (filtered.length === 0) {
-    feed.innerHTML = '<div class="empty-state">No prayer requests found. Be the first to share one.</div>';
+    if (emptyState) emptyState.classList.remove('id-hidden');
     return;
   }
+
+  if (emptyState) emptyState.classList.add('id-hidden');
 
   filtered.forEach(prayer => {
     const card = document.createElement('div');
@@ -339,7 +361,7 @@ function renderFeed() {
           <span class="prayer-user-name">${escapeHTML(prayer.name || "Anonymous")}</span>
           <span class="prayer-time-stamp">${timeAgo}</span>
         </div>
-        <span class="prayer-category-badge badge-${escapeHTML(prayer.category || 'general')}">${escapeHTML(prayer.category || 'General')}</span>
+        <span class="prayer-category-badge badge-${escapeHTML(prayer.category || 'General')}">${escapeHTML(prayer.category || 'General')}</span>
       </div>
       <div class="prayer-card-text">${escapeHTML(prayer.text || '')}</div>
       <div class="prayer-card-footer">
@@ -357,48 +379,60 @@ function renderFeed() {
 
 async function handleFormSubmit(e) {
   e.preventDefault();
-  const btn = e.target.querySelector('button[type="submit"]');
-  const ogText = btn.innerHTML;
-  btn.innerHTML = 'Submitting...';
+  const btn = document.getElementById('btn-submit-request') || e.target.querySelector('button[type="submit"]');
+  const ogHtml = btn.innerHTML;
+  btn.innerHTML = '<span>Submitting...</span>';
   btn.disabled = true;
 
+  const nameInput = document.getElementById('form-name');
+  const emailInput = document.getElementById('form-email');
+  const textInput = document.getElementById('form-text');
   const categoryInput = document.getElementById('form-category');
-  const nameInput = document.getElementById('prayer-name');
-  const textInput = document.getElementById('prayer-text');
-  const visibilitySelect = document.getElementById('prayer-visibility');
+  const publicCheckbox = document.getElementById('form-public');
+  const successBox = document.getElementById('form-success-box');
 
   const newPrayer = {
     id: 'fone-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-    name: nameInput.value.trim() || 'Anonymous',
-    category: categoryInput ? categoryInput.value : 'General',
-    text: textInput.value.trim(),
-    isPublic: visibilitySelect ? (visibilitySelect.value === 'public') : true
+    name: (nameInput && nameInput.value.trim()) || 'Anonymous',
+    email: (emailInput && emailInput.value.trim()) || '',
+    category: (categoryInput && categoryInput.value) || 'General',
+    text: textInput ? textInput.value.trim() : '',
+    isPublic: publicCheckbox ? publicCheckbox.checked : true
   };
 
   try {
-    await fetch('/api/prayers', {
+    const res = await fetch('/api/prayers', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newPrayer)
     });
-    
+
+    if (!res.ok) throw new Error('Failed to submit prayer');
+
     newPrayer.createdAt = new Date().toISOString();
     newPrayer.prayerCount = 0;
+    newPrayer.isApproved = true;
     prayersCache.unshift(newPrayer);
     
     e.target.reset();
-    if(categoryInput) categoryInput.value = 'General';
+    if (categoryInput) categoryInput.value = 'General';
     document.querySelectorAll('#prayer-cat-pills .cat-pill').forEach(p => p.classList.remove('selected'));
     const firstPill = document.querySelector('#prayer-cat-pills .cat-pill');
-    if(firstPill) firstPill.classList.add('selected');
+    if (firstPill) firstPill.classList.add('selected');
     
+    if (successBox) {
+      successBox.classList.remove('id-hidden');
+      setTimeout(() => successBox.classList.add('id-hidden'), 6000);
+    }
+
+    updatePrayerStats();
     renderFeed();
   } catch(err) {
     console.error(err);
-    alert('Error submitting request. Please try again.');
+    alert('Error submitting request. Please check your connection and try again.');
   }
 
-  btn.innerHTML = ogText;
+  btn.innerHTML = ogHtml;
   btn.disabled = false;
 }
 
@@ -415,6 +449,7 @@ window.handlePrayClick = async function(id) {
     if (button) button.classList.remove('active');
     prayer.prayerCount = Math.max(0, (prayer.prayerCount || 0) - 1);
     if(countSpan) countSpan.textContent = prayer.prayerCount;
+    updatePrayerStats();
     
     fetch('/api/pray', {
       method: 'POST',
@@ -434,6 +469,7 @@ window.handlePrayClick = async function(id) {
     }
     prayer.prayerCount = (prayer.prayerCount || 0) + 1;
     if(countSpan) countSpan.textContent = prayer.prayerCount;
+    updatePrayerStats();
     
     fetch('/api/pray', {
       method: 'POST',
@@ -461,53 +497,4 @@ function formatTimeAgo(date) {
   if (hours < 24) return hours + 'h ago';
   const days = Math.floor(hours / 24);
   return days + 'd ago';
-}
-
-/* ==========================================================================
-   Verse of the Day Feature
-   ========================================================================== */
-document.addEventListener('DOMContentLoaded', () => {
-  initVerseOfTheDay();
-});
-
-function initVerseOfTheDay() {
-  const textEl = document.getElementById('votd-text');
-  const refEl = document.getElementById('votd-ref');
-  if (!textEl || !refEl) return;
-
-  const fallbackVerses = [
-    { text: "For I am not ashamed of the gospel of Christ: for it is the power of God unto salvation to every one that believeth.", ref: "Romans 1:16" },
-    { text: "And he said unto them, Go ye into all the world, and preach the gospel to every creature.", ref: "Mark 16:15" },
-    { text: "If my people, which are called by my name, shall humble themselves, and pray, and seek my face, and turn from their wicked ways; then will I hear from heaven.", ref: "2 Chronicles 7:14" },
-    { text: "Go ye therefore, and teach all nations, baptizing them in the name of the Father, and of the Son, and of the Holy Ghost.", ref: "Matthew 28:19" },
-    { text: "Call unto me, and I will answer thee, and show thee great and mighty things, which thou knowest not.", ref: "Jeremiah 33:3" },
-    { text: "But ye shall receive power, after that the Holy Ghost is come upon you: and ye shall be witnesses unto me both in Jerusalem, and in all Judaea, and in Samaria, and unto the uttermost part of the earth.", ref: "Acts 1:8" },
-    { text: "The effectual fervent prayer of a righteous man availeth much.", ref: "James 5:16" },
-    { text: "Also I heard the voice of the Lord, saying, Whom shall I send, and who will go for us? Then said I, Here am I; send me.", ref: "Isaiah 6:8" }
-  ];
-
-  // Rotate based on current day of year
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now - start;
-  const oneDay = 1000 * 60 * 60 * 24;
-  const dayOfYear = Math.floor(diff / oneDay);
-
-  const selected = fallbackVerses[dayOfYear % fallbackVerses.length];
-  textEl.textContent = `"${selected.text}"`;
-  refEl.textContent = `- ${selected.ref}`;
-
-  // Attempt live API fetch for dynamic daily verse
-  fetch('https://labs.bible.org/api/?passage=votd&type=json')
-    .then(r => r.json())
-    .then(data => {
-      if (data && data[0]) {
-        const item = data[0];
-        textEl.textContent = `"${item.text.trim()}"`;
-        refEl.textContent = `- ${item.bookname} ${item.chapter}:${item.verse}`;
-      }
-    })
-    .catch(() => {
-      // Keep fallback
-    });
 }
