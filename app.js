@@ -261,6 +261,29 @@ function initCountdown() {
    ========================================================================== */
 let prayersCache = [];
 
+
+window.switchMobilePrayerTab = function(tab) {
+  const wallBtn = document.getElementById('btn-tab-wall');
+  const formBtn = document.getElementById('btn-tab-form');
+  const wallPanel = document.querySelector('.prayer-wall-panel');
+  const formPanel = document.querySelector('.prayer-form-panel');
+  const fabBtn = document.getElementById('mobile-fab');
+
+  if (tab === 'wall') {
+    if (wallBtn) wallBtn.classList.add('active');
+    if (formBtn) formBtn.classList.remove('active');
+    if (wallPanel) wallPanel.classList.remove('mobile-hide');
+    if (formPanel) formPanel.classList.add('mobile-hide');
+    if (fabBtn) fabBtn.style.display = '';
+  } else {
+    if (formBtn) formBtn.classList.add('active');
+    if (wallBtn) wallBtn.classList.remove('active');
+    if (formPanel) formPanel.classList.remove('mobile-hide');
+    if (wallPanel) wallPanel.classList.add('mobile-hide');
+    if (fabBtn) fabBtn.style.display = 'none';
+  }
+};
+
 function initPrayerWall() {
   const form = document.getElementById('prayer-form');
   const filterSelect = document.getElementById('wall-filter');
@@ -270,6 +293,10 @@ function initPrayerWall() {
   if (searchInput) searchInput.addEventListener('input', handleFilterChange);
   if (filterSelect) filterSelect.addEventListener('change', handleFilterChange);
   form.addEventListener('submit', handleFormSubmit);
+
+  if (window.innerWidth <= 768) {
+    switchMobilePrayerTab('wall');
+  }
 
   loadPrayerFeed();
 }
@@ -293,7 +320,8 @@ async function loadPrayerFeed() {
 
   if (loader) loader.classList.add('id-hidden');
   updatePrayerStats();
-  renderFeed();
+    renderFeed();
+    if (window.innerWidth <= 768) switchMobilePrayerTab("wall");
 }
 
 function updatePrayerStats() {
@@ -427,6 +455,7 @@ async function handleFormSubmit(e) {
 
     updatePrayerStats();
     renderFeed();
+    if (window.innerWidth <= 768) switchMobilePrayerTab("wall");
   } catch(err) {
     console.error(err);
     alert('Error submitting request. Please check your connection and try again.');

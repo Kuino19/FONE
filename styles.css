@@ -2442,3 +2442,70 @@ body {
 .hamburger span {
   background-color: #111827 !important;
 }
+
+/* Mobile Prayer Wall Tab Switcher & UX Fixes */
+.mobile-prayer-tabs, .mobile-fab-submit {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-prayer-tabs {
+    display: flex !important;
+    gap: 8px;
+    background: #F3F4F6;
+    padding: 6px;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 24px;
+    border: 1px solid #E5E7EB;
+  }
+  
+  .mobile-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #4B5563;
+    border-radius: var(--border-radius-sm);
+    transition: all 0.2s ease;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  
+  .mobile-tab-btn.active {
+    background: #FFFFFF !important;
+    color: #111827 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+  }
+
+  .mobile-hide {
+    display: none !important;
+  }
+
+  .mobile-fab-submit {
+    display: flex !important;
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    z-index: 900;
+    background: #111827;
+    color: #FFFFFF;
+    padding: 14px 22px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    align-items: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  .mobile-fab-submit:active {
+    transform: scale(0.95);
+  }
+}
