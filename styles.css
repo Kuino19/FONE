@@ -2417,3 +2417,28 @@ body {
 .hero-content-wrapper {
   margin-bottom: 80px !important;
 }
+
+/* Navbar Minimal Redesign Fix (Always visible dark text on white navbar) */
+.navbar {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid #F3F4F6 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+.logo-title {
+  color: #111827 !important;
+}
+
+.nav-item {
+  color: #4B5563 !important;
+}
+
+.nav-item:hover, .nav-item.active {
+  color: #111827 !important;
+}
+
+.hamburger span {
+  background-color: #111827 !important;
+}
