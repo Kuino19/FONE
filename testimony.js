@@ -4,20 +4,74 @@
    ========================================================================== */
 
 let testimoniesCache = [];
+let currentCategoryFilter = 'All';
 
 document.addEventListener('DOMContentLoaded', () => {
   initTestimonyWall();
 });
 
+window.switchMobileTestimonyTab = function(tab) {
+  const feedBtn = document.getElementById('btn-test-feed');
+  const formBtn = document.getElementById('btn-test-form');
+  const feedPanel = document.querySelector('.testimony-feed-panel');
+  const formPanel = document.querySelector('.testimony-form-panel');
+  const fabBtn = document.getElementById('mobile-test-fab');
+
+  if (tab === 'feed') {
+    if (feedBtn) feedBtn.classList.add('active');
+    if (formBtn) formBtn.classList.remove('active');
+    if (feedPanel) feedPanel.classList.remove('mobile-hide');
+    if (formPanel) formPanel.classList.add('mobile-hide');
+    if (fabBtn) fabBtn.style.display = '';
+  } else {
+    if (formBtn) formBtn.classList.add('active');
+    if (feedBtn) feedBtn.classList.remove('active');
+    if (formPanel) formPanel.classList.remove('mobile-hide');
+    if (feedPanel) feedPanel.classList.add('mobile-hide');
+    if (fabBtn) fabBtn.style.display = 'none';
+  }
+};
+
 function initTestimonyWall() {
   const form = document.getElementById('testimony-form');
   const searchInput = document.getElementById('testimony-search');
+  
   if (form) {
     form.addEventListener('submit', handleTestimonySubmit);
   }
   if (searchInput) {
     searchInput.addEventListener('input', renderTestimonies);
   }
+
+  // Setup Form Category Pills (.cat-pill)
+  const formPills = document.querySelectorAll('.testimony-form-panel .cat-pill');
+  const hiddenInput = document.getElementById('test-category');
+  formPills.forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      formPills.forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      if (hiddenInput) hiddenInput.value = pill.getAttribute('data-cat') || 'General';
+    });
+  });
+
+  // Setup Feed Category Filter Bar (.filter-pill)
+  const filterPills = document.querySelectorAll('.testimony-filter-bar .filter-pill');
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      filterPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentCategoryFilter = pill.getAttribute('data-filter') || 'All';
+      renderTestimonies();
+    });
+  });
+
+  // Default mobile view to Feed
+  if (window.innerWidth <= 768) {
+    switchMobileTestimonyTab('feed');
+  }
+
   loadTestimonies();
 }
 
@@ -67,6 +121,7 @@ function renderTestimonies() {
   const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
 
   let filtered = testimoniesCache.filter(t => {
+    if (currentCategoryFilter !== 'All' && t.category !== currentCategoryFilter) return false;
     if (searchVal && (!t.text || !t.text.toLowerCase().includes(searchVal)) && (!t.name || !t.name.toLowerCase().includes(searchVal))) return false;
     return true;
   });
@@ -158,6 +213,11 @@ async function handleTestimonySubmit(e) {
     testimoniesCache.unshift(newTestimony);
     
     e.target.reset();
+    if (categoryInput) categoryInput.value = 'General';
+    document.querySelectorAll('.testimony-form-panel .cat-pill').forEach(p => p.classList.remove('selected'));
+    const firstPill = document.querySelector('.testimony-form-panel .cat-pill');
+    if (firstPill) firstPill.classList.add('selected');
+
     if (successBox) {
       successBox.classList.remove('id-hidden');
       setTimeout(() => successBox.classList.add('id-hidden'), 6000);
@@ -165,6 +225,10 @@ async function handleTestimonySubmit(e) {
 
     updateTestimonyStats();
     renderTestimonies();
+
+    if (window.innerWidth <= 768) {
+      switchMobileTestimonyTab('feed');
+    }
     
     const feedEl = document.getElementById('testimony-feed');
     if (feedEl) feedEl.scrollIntoView({ behavior: 'smooth' });
@@ -218,7 +282,7 @@ window.handleAmenClick = async function(id) {
       body: JSON.stringify({ id, increment: true })
     }).catch(console.error);
   }
-}
+};
 
 function escapeHTML(str) {
   if (!str) return '';

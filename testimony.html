@@ -99,9 +99,23 @@
     </div>
   </section>
 
-  <!-- Main Content -->
+    <!-- Main Content -->
   <section class="testimony-main">
-    <div class="testimony-layout">
+    <div class="section-container" style="padding-top: 20px; padding-bottom: 80px;">
+      
+      <!-- Mobile Mode Switcher (Visible on Mobile <= 768px) -->
+      <div class="mobile-prayer-tabs" style="display: none; max-width: 1200px; margin: 0 auto 24px;">
+        <button type="button" class="mobile-tab-btn active" id="btn-test-feed" onclick="switchMobileTestimonyTab('feed')">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          View Testimonies
+        </button>
+        <button type="button" class="mobile-tab-btn" id="btn-test-form" onclick="switchMobileTestimonyTab('form')">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Share Testimony
+        </button>
+      </div>
+
+      <div class="testimony-layout">
 
       <!-- Left: Submission Form -->
       <div class="testimony-form-panel">
@@ -253,6 +267,12 @@
     </div>
   </footer>
   <script src="app.js"></script>
+    <!-- Floating Action Button on Mobile -->
+  <button type="button" class="mobile-fab-submit" id="mobile-test-fab" onclick="switchMobileTestimonyTab('form')">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+    Share Testimony
+  </button>
+
   <script src="testimony.js"></script>
 
 </body>
